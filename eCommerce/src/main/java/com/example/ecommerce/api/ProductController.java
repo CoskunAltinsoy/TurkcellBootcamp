@@ -26,8 +26,8 @@ public class ProductController {
         return (ResponseEntity<Void>) ResponseEntity.ok();
     }
     @PutMapping ("/update")
-    public ResponseEntity<Product> update(@RequestBody Product product){
-        productService.update(product);
+    public ResponseEntity<Product> update(@PathVariable int id, @RequestBody Product product){
+        productService.update(id, product);
         return ResponseEntity.ok(product);
     }
     @GetMapping("/getall")

@@ -1,8 +1,8 @@
 package com.kodlama.io.rentacar.business.concretes;
 
 import com.kodlama.io.rentacar.business.abstracts.BrandService;
-import com.kodlama.io.rentacar.entities.concretes.Brand;
-import com.kodlama.io.rentacar.repository.abstracts.BrandRepository;
+import com.kodlama.io.rentacar.entities.Brand;
+import com.kodlama.io.rentacar.repository.BrandRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +15,28 @@ public class BrandManager implements BrandService {
     }
     @Override
     public List<Brand> getAll() {
-        return brandRepository.getAll();
+        return brandRepository.findAll();
+    }
+
+    @Override
+    public Brand getById(int id) {
+        return brandRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public Brand add(Brand brand) {
+        return brandRepository.save(brand);
+    }
+
+    @Override
+    public Brand update(Brand brand) {
+        Brand updatedBrand = getById(brand.getId());
+        updatedBrand.setName(brand.getName());
+        return brandRepository.save(updatedBrand);
+    }
+
+    @Override
+    public void delete(int id) {
+        brandRepository.deleteById(id);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ecommerce.entities.concretes;
+package com.kodlama.io.rentacar.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,19 +11,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "products")
-public class Product {
+@Table(name = "brands")
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "name")
     private String name;
-    @Column(name = "quantity")
-    private int quantity;
-    @Column(name = "unit_price")
-    private double unitPrice;
-    @Column(name = "description")
-    private String description;
-
 
 }
