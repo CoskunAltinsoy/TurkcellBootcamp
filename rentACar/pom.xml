@@ -11,8 +11,8 @@
     <groupId>com.kodlama.io</groupId>
     <artifactId>rent-a-car</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springIntro1</name>
-    <description>springIntro1</description>
+    <name>rentACar</name>
+    <description>rentACar</description>
     <properties>
         <java.version>17</java.version>
     </properties>

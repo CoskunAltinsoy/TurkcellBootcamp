@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,5 +20,7 @@ public class Brand {
     private int id;
     @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "brand")
+    private List<Model> models;
 
 }
