@@ -24,4 +24,7 @@ public class Car {
     private int state;
     @Column(name = "daily_price")
     private double dailyPrice;
+    @ManyToOne()
+    @JoinColumn(name = "model_id")
+    private Model model;
 }

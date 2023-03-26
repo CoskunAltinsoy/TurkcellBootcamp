@@ -1,10 +1,15 @@
 package com.kodlama.io.rentacar.business.concretes;
 
 import com.kodlama.io.rentacar.business.abstracts.BrandService;
+import com.kodlama.io.rentacar.business.dto.requests.create.CreateBrandRequest;
+import com.kodlama.io.rentacar.business.dto.responses.create.CreateBrandResponse;
+import com.kodlama.io.rentacar.business.dto.responses.get.GetAllBrandsResponse;
+import com.kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import com.kodlama.io.rentacar.entities.Brand;
 import com.kodlama.io.rentacar.repository.BrandRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class BrandManager implements BrandService {
@@ -14,25 +19,45 @@ public class BrandManager implements BrandService {
         this.brandRepository = brandRepository;
     }
     @Override
-    public List<Brand> getAll() {
-        return brandRepository.findAll();
+    public List<GetAllBrandsResponse> getAll() {
+        List<Brand> brands = brandRepository.findAll();
+        List<GetAllBrandsResponse> getAllBrandsResponses = new ArrayList<>();
+        brands.stream()
+                .forEach(brand -> getAllBrandsResponses.add(new GetAllBrandsResponse(brand.getId(), brand.getName())));
+        return getAllBrandsResponses;
     }
 
     @Override
-    public Brand getById(int id) {
-        return brandRepository.findById(id).orElseThrow();
+    public GetBrandResponse getById(int id) {
+        Brand brand = brandRepository.findById(id).orElseThrow();
+        GetBrandResponse getBrandResponse =
+                new GetBrandResponse(
+                        brand.getId(),
+                        brand.getName()
+                );
+        return getBrandResponse;
     }
 
     @Override
-    public Brand add(Brand brand) {
-        return brandRepository.save(brand);
+    public CreateBrandResponse add(CreateBrandRequest createBrandRequest) {
+        Brand brand = new Brand();
+        brand.setName(createBrandRequest.getName());
+        brandRepository.save(brand);
+
+        CreateBrandResponse createBrandResponse =
+                                new CreateBrandResponse(
+                                        brand.getId(),
+                                        brand.getName()
+                                );
+        return createBrandResponse;
     }
 
     @Override
     public Brand update(Brand brand) {
-        Brand updatedBrand = getById(brand.getId());
-        updatedBrand.setName(brand.getName());
-        return brandRepository.save(updatedBrand);
+       // Brand updatedBrand = getById(brand.getId());
+       // updatedBrand.setName(brand.getName());
+       // return brandRepository.save(updatedBrand);
+        return null;
     }
 
     @Override
