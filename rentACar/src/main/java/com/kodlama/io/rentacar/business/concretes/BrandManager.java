@@ -2,66 +2,77 @@ package com.kodlama.io.rentacar.business.concretes;
 
 import com.kodlama.io.rentacar.business.abstracts.BrandService;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateBrandRequest;
+import com.kodlama.io.rentacar.business.dto.requests.update.UpdateBrandRequest;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateBrandResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllBrandsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
+import com.kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse;
+import com.kodlama.io.rentacar.config.ModelMapperService;
 import com.kodlama.io.rentacar.entities.Brand;
 import com.kodlama.io.rentacar.repository.BrandRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class BrandManager implements BrandService {
     private final BrandRepository brandRepository;
+    private final ModelMapper modelMapper;
 
-    public BrandManager(BrandRepository brandRepository) {
+    public BrandManager(
+            BrandRepository brandRepository,
+            ModelMapper modelMapper
+    ) {
         this.brandRepository = brandRepository;
+        this.modelMapper = modelMapper;
     }
     @Override
     public List<GetAllBrandsResponse> getAll() {
         List<Brand> brands = brandRepository.findAll();
-        List<GetAllBrandsResponse> getAllBrandsResponses = new ArrayList<>();
-        brands.stream()
-                .forEach(brand -> getAllBrandsResponses.add(new GetAllBrandsResponse(brand.getId(), brand.getName())));
+        List<GetAllBrandsResponse> getAllBrandsResponses =  brands.stream()
+                .map(brand -> modelMapper.map(brand, GetAllBrandsResponse.class))
+                .collect(Collectors.toList());
         return getAllBrandsResponses;
     }
-
     @Override
     public GetBrandResponse getById(int id) {
         Brand brand = brandRepository.findById(id).orElseThrow();
-        GetBrandResponse getBrandResponse =
-                new GetBrandResponse(
-                        brand.getId(),
-                        brand.getName()
-                );
+        GetBrandResponse getBrandResponse = modelMapper.map(brand, GetBrandResponse.class);
+
         return getBrandResponse;
     }
-
     @Override
     public CreateBrandResponse add(CreateBrandRequest createBrandRequest) {
-        Brand brand = new Brand();
-        brand.setName(createBrandRequest.getName());
+        checkIfBrandExistByName(createBrandRequest.getName());
+        Brand brand = modelMapper.map(createBrandRequest, Brand.class);
+        brand.setId(0);
         brandRepository.save(brand);
 
-        CreateBrandResponse createBrandResponse =
-                                new CreateBrandResponse(
-                                        brand.getId(),
-                                        brand.getName()
-                                );
+        CreateBrandResponse createBrandResponse = modelMapper.map(brand,CreateBrandResponse.class);
         return createBrandResponse;
     }
 
     @Override
-    public Brand update(Brand brand) {
-       // Brand updatedBrand = getById(brand.getId());
-       // updatedBrand.setName(brand.getName());
-       // return brandRepository.save(updatedBrand);
-        return null;
+    public UpdateBrandResponse update(UpdateBrandRequest updateBrandRequest) {
+        Brand brand = modelMapper.map(updateBrandRequest, Brand.class);
+        brandRepository.save(brand);
+
+        UpdateBrandResponse updateBrandResponse = modelMapper.map(brand,UpdateBrandResponse.class);
+
+        return updateBrandResponse;
     }
 
     @Override
     public void delete(int id) {
         brandRepository.deleteById(id);
+    }
+
+    private void checkIfBrandExistByName(String name){
+        if (brandRepository.existsByNameIgnoreCase(name)) {
+            throw new RuntimeException("Böyle bir marka sistemde kayıtlı");
+        }
     }
 }
