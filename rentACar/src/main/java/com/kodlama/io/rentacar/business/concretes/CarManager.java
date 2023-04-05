@@ -73,4 +73,11 @@ public class CarManager implements CarService {
         this.carRepository.deleteById(id);
     }
 
+    @Override
+    public void changeCarState(int id, CarState carState) {
+        Car car = carRepository.findById(id).orElseThrow();
+        car.setCarState(carState);
+        carRepository.save(car);
+    }
+
 }

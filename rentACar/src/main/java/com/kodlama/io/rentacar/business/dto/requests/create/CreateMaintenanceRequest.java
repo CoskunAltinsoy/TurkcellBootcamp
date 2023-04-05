@@ -12,7 +12,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateMaintenanceRequest {
-    private LocalDate sendingDate;
-    private LocalDate returnDate;
+    private String description;
+    private boolean isComplated;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private int carId;
 }

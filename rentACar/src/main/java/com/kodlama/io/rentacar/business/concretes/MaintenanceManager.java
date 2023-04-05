@@ -18,6 +18,7 @@ import com.kodlama.io.rentacar.repository.MaintenanceRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,20 +59,14 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public CreateMaintenanceResponse add(CreateMaintenanceRequest createMaintenanceRequest) {
-        checkCarState(createMaintenanceRequest.getCarId());
-
-        Car car = modelMapper
-                .map(this.carService.getById(createMaintenanceRequest.getCarId()), Car.class);
-
-        car.setCarState(CarState.MAINTENANCE);
+        checkCarAvailabilityForMaintenance(createMaintenanceRequest.getCarId());
 
         Maintenance maintenance = modelMapper.map(createMaintenanceRequest, Maintenance.class);
-        maintenance.setCar(car);
         maintenance.setId(0);
-
-        UpdateCarRequest updateCarRequest =
-                modelMapper.map(car, UpdateCarRequest.class);
-        carService.update(updateCarRequest);
+        maintenance.setCompleted(false);
+        maintenance.setStartDate(LocalDate.now());
+        maintenance.setEndDate(LocalDate.now());
+        carService.changeCarState(createMaintenanceRequest.getCarId(), CarState.MAINTENANCE);
 
         this.maintenanceRepository.save(maintenance);
 
@@ -82,6 +77,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public UpdateMaintenanceResponse update(UpdateMaintenanceRequest updateMaintenanceRequest) {
+        checkIfMaintenanceExists(updateMaintenanceRequest.getId());
         Maintenance maintenance = modelMapper.map(updateMaintenanceRequest, Maintenance.class);
         this.maintenanceRepository.save(maintenance);
 
@@ -95,13 +91,18 @@ public class MaintenanceManager implements MaintenanceService {
         this.maintenanceRepository.deleteById(id);
     }
 
-    private void checkCarState(int id){
+    private void checkCarAvailabilityForMaintenance(int id){
         GetCarResponse getCarResponse = this.carService.getById(id);
-
         Car car =
                 modelMapper.map(getCarResponse, Car.class);
         if(!car.getCarState().equals(CarState.AVAILABLE)){
-            throw new RuntimeException("This car cannot be rented");
+            throw new RuntimeException("This car cannot be serviced.");
+        }
+    }
+
+    private void checkIfMaintenanceExists(int id){
+        if(!maintenanceRepository.existsById(id)){
+            throw new RuntimeException("There is no such a maintenance.");
         }
     }
 

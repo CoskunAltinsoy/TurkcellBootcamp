@@ -13,7 +13,6 @@ public interface MaintenanceService {
     List<GetAllMaintenancesResponse> getAll();
     GetMaintenanceResponse getById(int id);
     CreateMaintenanceResponse add(CreateMaintenanceRequest createMaintenanceRequest);
-
     UpdateMaintenanceResponse update(UpdateMaintenanceRequest updateMaintenanceRequest);
     void delete(int id);
 }

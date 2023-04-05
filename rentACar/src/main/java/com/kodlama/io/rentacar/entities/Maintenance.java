@@ -19,8 +19,10 @@ public class Maintenance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private LocalDate sendingDate;
-    private LocalDate returnDate;
+    private String description;
+    private boolean isCompleted;
+    private LocalDate startDate;
+    private LocalDate endDate;
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
