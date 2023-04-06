@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,24 @@ public class MaintenanceManager implements MaintenanceService {
     @Override
     public void delete(int id) {
         this.maintenanceRepository.deleteById(id);
+    }
+
+    @Override
+    public GetMaintenanceResponse returnCarFromMaintenance(int id) {
+        checkIfCarIsInMaintenance(id);
+        Maintenance maintenance = maintenanceRepository.findByCarIdAndIsCompletedIsFalse(id);
+        maintenance.setCompleted(true);
+        maintenance.setEndDate(LocalDate.now());
+        maintenanceRepository.save(maintenance); // Update
+        carService.changeCarState(id, CarState.AVAILABLE);
+        GetMaintenanceResponse getMaintenanceResponse =
+                modelMapper.map(maintenance, GetMaintenanceResponse.class);
+        return getMaintenanceResponse;
+    }
+    private void checkIfCarIsInMaintenance(int id){
+        if(!maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(id)){
+            throw new RuntimeException("There is no car in maintenance.");
+        }
     }
 
     private void checkCarAvailabilityForMaintenance(int id){

@@ -49,4 +49,8 @@ public class MaintenancesController {
     public void delete(@PathVariable int id){
         maintenanceService.delete(id);
     }
+    @PutMapping("/return/{id}")
+    public GetMaintenanceResponse returnCarFromMaintenance(@PathVariable("id") int id){
+        return maintenanceService.returnCarFromMaintenance(id);
+    }
 }

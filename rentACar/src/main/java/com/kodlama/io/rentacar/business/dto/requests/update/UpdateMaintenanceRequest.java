@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class UpdateMaintenanceRequest {
     private int id;
     private String description;
-    private boolean isComplated;
+    private boolean isCompleted;
     private LocalDate startDate;
     private LocalDate endDate;
     private int carId;

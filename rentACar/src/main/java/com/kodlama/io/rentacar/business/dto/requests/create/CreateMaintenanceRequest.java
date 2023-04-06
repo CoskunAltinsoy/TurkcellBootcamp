@@ -13,8 +13,5 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CreateMaintenanceRequest {
     private String description;
-    private boolean isComplated;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private int carId;
 }
