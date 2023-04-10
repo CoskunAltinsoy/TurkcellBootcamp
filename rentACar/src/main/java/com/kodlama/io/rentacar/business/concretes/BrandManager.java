@@ -39,6 +39,7 @@ public class BrandManager implements BrandService {
     }
     @Override
     public GetBrandResponse getById(int id) {
+        checkIfBrandExistsById(id);
         Brand brand = brandRepository.findById(id).orElseThrow();
         GetBrandResponse getBrandResponse = modelMapper.map(brand, GetBrandResponse.class);
 
@@ -57,6 +58,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public UpdateBrandResponse update(UpdateBrandRequest updateBrandRequest) {
+        checkIfBrandExistsById(updateBrandRequest.getId());
         Brand brand = modelMapper.map(updateBrandRequest, Brand.class);
         brandRepository.save(brand);
 
@@ -72,7 +74,12 @@ public class BrandManager implements BrandService {
 
     private void checkIfBrandExistByName(String name){
         if (brandRepository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("Böyle bir marka sistemde kayıtlı");
+            throw new RuntimeException("This brand is registered in the system");
+        }
+    }
+    private void checkIfBrandExistsById(int id) {
+        if (!brandRepository.existsById(id)) {
+            throw new RuntimeException("This brand is not registered in the system");
         }
     }
 }

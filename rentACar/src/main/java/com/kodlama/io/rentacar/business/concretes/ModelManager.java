@@ -38,6 +38,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public GetModelResponse getById(int id) {
+        checkIfModelExistsById(id);
         Model model = modelRepository.findById(id).orElseThrow();
         GetModelResponse getModelResponse = modelMapper.map(model, GetModelResponse.class);
 
@@ -57,6 +58,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public UpdateModelResponse update(UpdateModelRequest updateModelRequest) {
+        checkIfModelExistsById(updateModelRequest.getId());
         Model model = modelMapper.map(updateModelRequest, Model.class);
         modelRepository.save(model);
 
@@ -71,7 +73,12 @@ public class ModelManager implements ModelService {
 
     private void checkIfModelExistByName(String name){
         if (modelRepository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("Böyle bir model sistemde kayıtlı");
+            throw new RuntimeException("This model is registered in the system");
+        }
+    }
+    private void checkIfModelExistsById(int id) {
+        if (!modelRepository.existsById(id)) {
+            throw new RuntimeException("This model is not registered in the system");
         }
     }
 }

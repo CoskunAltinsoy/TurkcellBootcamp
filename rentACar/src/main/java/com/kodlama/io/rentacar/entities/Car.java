@@ -33,5 +33,7 @@ public class Car {
     private Model model;
     @OneToMany(mappedBy = "car")
     private List<Maintenance> maintenances;
+    @OneToMany(mappedBy = "car")
+    private List<Rental> rentals;
 
 }

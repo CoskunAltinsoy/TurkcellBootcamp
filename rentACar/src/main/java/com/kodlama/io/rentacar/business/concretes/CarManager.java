@@ -42,6 +42,7 @@ public class CarManager implements CarService {
 
     @Override
     public GetCarResponse getById(int id) {
+        checkIfCarExists(id);
         Car car = this.carRepository.findById(id).orElseThrow();
         GetCarResponse getCarResponse = modelMapper.map(car, GetCarResponse.class);
 
@@ -61,6 +62,7 @@ public class CarManager implements CarService {
 
     @Override
     public UpdateCarResponse update(UpdateCarRequest updateCarRequest) {
+        checkIfCarExists(updateCarRequest.getId());
         Car car = modelMapper.map(updateCarRequest, Car.class);
         this.carRepository.save(car);
 
@@ -78,6 +80,12 @@ public class CarManager implements CarService {
         Car car = carRepository.findById(id).orElseThrow();
         car.setCarState(carState);
         carRepository.save(car);
+    }
+
+    private void checkIfCarExists(int id) {
+        if (!carRepository.existsById(id)) {
+            throw new RuntimeException("This car is not registered in the system");
+        }
     }
 
 }
