@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car,Integer> {
-    List<Car> findAllCarByCarState(CarState carState);
+    List<Car> findAllByCarStateIsNot(CarState carState);
 }

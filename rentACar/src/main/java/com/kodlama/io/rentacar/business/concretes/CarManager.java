@@ -28,13 +28,10 @@ public class CarManager implements CarService {
     }
 
     @Override
-    public List<GetAllCarsResponse> getAll(boolean maintenance) {
-        List<Car> cars = this.carRepository.findAll();
+    public List<GetAllCarsResponse> getAll(boolean exceptMaintenance) {
+        List<Car> cars = filterCarsByMaintenanceState(exceptMaintenance);
         List<GetAllCarsResponse> getAllCarsResponses = cars
                 .stream()
-                .filter(car ->  maintenance ?
-                                car.getCarState().equals(CarState.MAINTENANCE) :
-                                car.getCarState().equals(CarState.AVAILABLE))
                 .map(car -> modelMapper.map(car, GetAllCarsResponse.class))
                 .collect(Collectors.toList());
         return getAllCarsResponses;
@@ -86,6 +83,12 @@ public class CarManager implements CarService {
         if (!carRepository.existsById(id)) {
             throw new RuntimeException("This car is not registered in the system");
         }
+    }
+    private List<Car> filterCarsByMaintenanceState(boolean exceptMaintenance) {
+        if(exceptMaintenance){
+            return carRepository.findAllByCarStateIsNot(CarState.MAINTENANCE);
+        }
+        return carRepository.findAll();
     }
 
 }
