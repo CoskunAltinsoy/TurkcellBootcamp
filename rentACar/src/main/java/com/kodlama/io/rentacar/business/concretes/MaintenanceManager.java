@@ -60,6 +60,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public CreateMaintenanceResponse add(CreateMaintenanceRequest createMaintenanceRequest) {
+        checkIfCarIsInMaintenance(createMaintenanceRequest.getCarId());
         checkCarAvailabilityForMaintenance(createMaintenanceRequest.getCarId());
 
         Maintenance maintenance = modelMapper.map(createMaintenanceRequest, Maintenance.class);
@@ -94,34 +95,36 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public GetMaintenanceResponse returnCarFromMaintenance(int id) {
-        checkIfCarIsInMaintenance(id);
+        checkIfCarIsNotInMaintenance(id);
         Maintenance maintenance = maintenanceRepository.findByCarIdAndIsCompletedIsFalse(id);
         maintenance.setCompleted(true);
         maintenance.setEndDate(LocalDate.now());
-        maintenanceRepository.save(maintenance); // Update
+        maintenanceRepository.save(maintenance);
         carService.changeCarState(id, CarState.AVAILABLE);
         GetMaintenanceResponse getMaintenanceResponse =
                 modelMapper.map(maintenance, GetMaintenanceResponse.class);
         return getMaintenanceResponse;
     }
     private void checkIfCarIsInMaintenance(int id){
-        if(!maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(id)){
-            throw new RuntimeException("There is no car in maintenance.");
+        if(maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(id)){
+            throw new RuntimeException("This car is in maintenance.");
+        }
+    }
+    private void checkIfCarIsNotInMaintenance(int id) {
+        if (!maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(id)) {
+            throw new RuntimeException("This car is no in maintenance");
         }
     }
 
     private void checkCarAvailabilityForMaintenance(int id){
-        GetCarResponse getCarResponse = this.carService.getById(id);
-        Car car =
-                modelMapper.map(getCarResponse, Car.class);
-        if(!car.getCarState().equals(CarState.AVAILABLE)){
-            throw new RuntimeException("This car cannot be serviced.");
+        if(!carService.getById(id).getCarState().equals(CarState.AVAILABLE)){
+            throw new RuntimeException("This car cannot be serviced. This car is rented");
         }
     }
 
     private void checkIfMaintenanceExists(int id){
         if(!maintenanceRepository.existsById(id)){
-            throw new RuntimeException("There is no such a maintenance.");
+            throw new RuntimeException("This maintenance info is not registered in the system.");
         }
     }
 

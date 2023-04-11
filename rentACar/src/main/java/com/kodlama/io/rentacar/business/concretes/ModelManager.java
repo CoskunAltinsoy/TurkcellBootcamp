@@ -42,7 +42,7 @@ public class ModelManager implements ModelService {
         Model model = modelRepository.findById(id).orElseThrow();
         GetModelResponse getModelResponse = modelMapper.map(model, GetModelResponse.class);
 
-        return null;
+        return getModelResponse;
     }
 
     @Override

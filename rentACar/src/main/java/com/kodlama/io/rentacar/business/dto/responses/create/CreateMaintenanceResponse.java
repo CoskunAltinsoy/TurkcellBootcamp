@@ -13,10 +13,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CreateMaintenanceResponse {
     private int id;
+    private int carId;
     private String description;
-    private boolean isComplated;
+    private boolean isCompleted;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private int carId;
 }

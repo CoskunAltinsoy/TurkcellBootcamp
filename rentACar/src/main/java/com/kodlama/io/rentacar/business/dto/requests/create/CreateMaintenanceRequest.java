@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateMaintenanceRequest {
-    private String description;
     private int carId;
+    private String description;
+
 }
