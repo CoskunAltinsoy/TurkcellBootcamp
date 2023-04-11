@@ -12,5 +12,6 @@ import lombok.Setter;
 public class UpdateRentalRequest {
     private int id;
     private int carId;
+    private double dailyPrice;
     private int rentedForDays;
 }

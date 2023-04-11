@@ -79,7 +79,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public UpdateMaintenanceResponse update(UpdateMaintenanceRequest updateMaintenanceRequest) {
-        checkIfMaintenanceExists(updateMaintenanceRequest.getId());
+        checkIfMaintenanceExistsById(updateMaintenanceRequest.getId());
         Maintenance maintenance = modelMapper.map(updateMaintenanceRequest, Maintenance.class);
         this.maintenanceRepository.save(maintenance);
 
@@ -90,6 +90,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public void delete(int id) {
+        checkIfMaintenanceExistsById(id);
         this.maintenanceRepository.deleteById(id);
     }
 
@@ -122,7 +123,7 @@ public class MaintenanceManager implements MaintenanceService {
         }
     }
 
-    private void checkIfMaintenanceExists(int id){
+    private void checkIfMaintenanceExistsById(int id){
         if(!maintenanceRepository.existsById(id)){
             throw new RuntimeException("This maintenance info is not registered in the system.");
         }

@@ -18,4 +18,5 @@ public class GetAllRentalsResponse {
     private int rentedForDays;
     private double totalPrice;
     private LocalDate startDate;
+    private boolean isCompleted;
 }

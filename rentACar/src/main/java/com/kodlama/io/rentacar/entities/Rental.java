@@ -22,6 +22,7 @@ public class Rental {
     private int rentedForDays;
     private double totalPrice;
     private LocalDate startDate;
+    private boolean isCompleted;
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;

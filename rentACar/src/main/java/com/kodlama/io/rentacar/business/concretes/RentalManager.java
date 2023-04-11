@@ -47,7 +47,7 @@ public class RentalManager implements RentalService {
 
     @Override
     public GetRentalResponse getById(int id) {
-        checkIfRentalExists(id);
+        checkIfRentalExistsById(id);
         Rental rental = rentalRepository.findById(id).orElseThrow();
         GetRentalResponse getRentalResponse
                 = modelMapper.map(rental,GetRentalResponse.class);
@@ -56,10 +56,13 @@ public class RentalManager implements RentalService {
 
     @Override
     public CreateRentalResponse add(CreateRentalRequest createRentalRequest) {
+        checkIfCarInRented(createRentalRequest.getCarId());
         checkIfCarAvailable(createRentalRequest.getCarId());
+
         Rental rental = modelMapper.map(createRentalRequest, Rental.class);
         rental.setId(0);
         rental.setTotalPrice(getTotalPrice(rental));
+        rental.setCompleted(false);
         rental.setStartDate(LocalDate.now());
 
         rentalRepository.save(rental);
@@ -72,7 +75,7 @@ public class RentalManager implements RentalService {
 
     @Override
     public UpdateRentalResponse update(UpdateRentalRequest updateRentalRequest) {
-        checkIfRentalExists(updateRentalRequest.getId());
+        checkIfRentalExistsById(updateRentalRequest.getId());
         Rental rental = modelMapper.map(updateRentalRequest, Rental.class);
         rental.setTotalPrice(getTotalPrice(rental));
         rentalRepository.save(rental);
@@ -83,10 +86,23 @@ public class RentalManager implements RentalService {
 
     @Override
     public void delete(int id) {
-        checkIfRentalExists(id);
+        checkIfRentalExistsById(id);
         Rental rental = rentalRepository.findById(id).orElseThrow();
         carService.changeCarState(rental.getCar().getId(), CarState.AVAILABLE);
         rentalRepository.deleteById(id);
+    }
+
+    @Override
+    public GetRentalResponse returnCarFromRented(int id) {
+        checkIfCarIsNotInRented(id);
+        Rental rental = rentalRepository.findByCarIdAndIsCompletedIsFalse(id);
+        rental.setCompleted(true);
+        rentalRepository.save(rental);
+        carService.changeCarState(id, CarState.AVAILABLE);
+        GetRentalResponse getRentalResponse =
+                modelMapper.map(rental, GetRentalResponse.class);
+        return getRentalResponse;
+
     }
 
     private void checkIfCarAvailable(int id){
@@ -95,12 +111,23 @@ public class RentalManager implements RentalService {
        };
     }
 
-    private void checkIfRentalExists(int id) {
+    private void checkIfRentalExistsById(int id) {
         if (!rentalRepository.existsById(id)) {
             throw new RuntimeException("There is no rental information available");
         }
     }
     private double getTotalPrice(Rental rental) {
         return rental.getDailyPrice() * rental.getRentedForDays();
+    }
+    private void checkIfCarInRented(int id){
+        if(rentalRepository.existsByCarIdAndIsComplatedFalse(id)){
+            throw new RuntimeException("This car is in rented");
+        }
+    }
+
+    private void checkIfCarIsNotInRented(int id) {
+        if (!rentalRepository.existsByCarIdAndIsComplatedFalse(id)) {
+            throw new RuntimeException("This car is no in rented");
+        }
     }
 }

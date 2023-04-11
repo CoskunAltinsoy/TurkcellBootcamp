@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
+    boolean existsByCarIdAndIsComplatedFalse(int id);
+    Rental findByCarIdAndIsCompletedIsFalse(int id);
 }

@@ -69,6 +69,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public void delete(int id) {
+        checkIfBrandExistsById(id);
         brandRepository.deleteById(id);
     }
 
