@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaintenanceRepository extends JpaRepository<Maintenance,Integer> {
-    boolean existsByCarIdAndIsCompletedIsFalse(int id);
-    Maintenance findByCarIdAndIsCompletedIsFalse(int id);
+    boolean existsByCarIdAndIsCompletedIsFalse(int carId);
+    Maintenance findByCarIdAndIsCompletedIsFalse(int carId);
 }

@@ -27,8 +27,8 @@ public class CarsController {
         this.carService = carService;
     }
     @GetMapping()
-    public List<GetAllCarsResponse> getAll(@RequestParam(required = false) boolean exceptMaintenance){
-        return carService.getAll(exceptMaintenance);
+    public List<GetAllCarsResponse> getAll(@RequestParam(required = false) boolean isMaintenanceIncluded){
+        return carService.getAll(isMaintenanceIncluded);
     }
     @GetMapping("/{id}")
     public GetCarResponse getById(@PathVariable("id") int id){

@@ -18,5 +18,5 @@ public interface RentalService {
     CreateRentalResponse add(CreateRentalRequest createRentalRequest);
     UpdateRentalResponse update(UpdateRentalRequest updateRentalRequest);
     void delete(int id);
-    GetRentalResponse returnCarFromRented(int id);
+    GetRentalResponse returnCarFromRented(int carId);
 }

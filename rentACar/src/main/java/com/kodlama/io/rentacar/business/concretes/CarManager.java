@@ -28,8 +28,8 @@ public class CarManager implements CarService {
     }
 
     @Override
-    public List<GetAllCarsResponse> getAll(boolean exceptMaintenance) {
-        List<Car> cars = filterCarsByMaintenanceState(exceptMaintenance);
+    public List<GetAllCarsResponse> getAll(boolean isMaintenanceIncluded) {
+        List<Car> cars = filterCarsByMaintenanceState(isMaintenanceIncluded);
         List<GetAllCarsResponse> getAllCarsResponses = cars
                 .stream()
                 .map(car -> modelMapper.map(car, GetAllCarsResponse.class))
@@ -85,8 +85,8 @@ public class CarManager implements CarService {
             throw new RuntimeException("This car is not registered in the system");
         }
     }
-    private List<Car> filterCarsByMaintenanceState(boolean exceptMaintenance) {
-        if(exceptMaintenance){
+    private List<Car> filterCarsByMaintenanceState(boolean isMaintenanceIncluded) {
+        if(isMaintenanceIncluded){
             return carRepository.findAllByCarStateIsNot(CarState.MAINTENANCE);
         }
         return carRepository.findAll();

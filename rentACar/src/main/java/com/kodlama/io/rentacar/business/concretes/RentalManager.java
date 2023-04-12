@@ -87,26 +87,25 @@ public class RentalManager implements RentalService {
     @Override
     public void delete(int id) {
         checkIfRentalExistsById(id);
-        Rental rental = rentalRepository.findById(id).orElseThrow();
-        carService.changeCarState(rental.getCar().getId(), CarState.AVAILABLE);
+        makeCarAvailableIfIsCompletedFalse(id);
         rentalRepository.deleteById(id);
     }
 
     @Override
-    public GetRentalResponse returnCarFromRented(int id) {
-        checkIfCarIsNotInRented(id);
-        Rental rental = rentalRepository.findByCarIdAndIsCompletedIsFalse(id);
+    public GetRentalResponse returnCarFromRented(int carId) {
+        checkIfCarIsNotInRented(carId);
+        Rental rental = rentalRepository.findByCarIdAndIsCompletedIsFalse(carId);
         rental.setCompleted(true);
         rentalRepository.save(rental);
-        carService.changeCarState(id, CarState.AVAILABLE);
+        carService.changeCarState(carId, CarState.AVAILABLE);
         GetRentalResponse getRentalResponse =
                 modelMapper.map(rental, GetRentalResponse.class);
         return getRentalResponse;
 
     }
 
-    private void checkIfCarAvailable(int id){
-       if(!carService.getById(id).getCarState().equals(CarState.AVAILABLE)){
+    private void checkIfCarAvailable(int carId){
+       if(!carService.getById(carId).getCarState().equals(CarState.AVAILABLE)){
            throw new RuntimeException("Car is not available");
        };
     }
@@ -119,15 +118,22 @@ public class RentalManager implements RentalService {
     private double getTotalPrice(Rental rental) {
         return rental.getDailyPrice() * rental.getRentedForDays();
     }
-    private void checkIfCarInRented(int id){
-        if(rentalRepository.existsByCarIdAndIsComplatedFalse(id)){
+    private void checkIfCarInRented(int carId){
+        if(rentalRepository.existsByCarIdAndIsCompletedIsFalse(carId)){
             throw new RuntimeException("This car is in rented");
         }
     }
 
-    private void checkIfCarIsNotInRented(int id) {
-        if (!rentalRepository.existsByCarIdAndIsComplatedFalse(id)) {
+    private void checkIfCarIsNotInRented(int carId) {
+        if (!rentalRepository.existsByCarIdAndIsCompletedIsFalse(carId)) {
             throw new RuntimeException("This car is no in rented");
+        }
+    }
+
+    private void makeCarAvailableIfIsCompletedFalse(int id) {
+        int carId = rentalRepository.findById(id).get().getCar().getId();
+        if (rentalRepository.existsByCarIdAndIsCompletedIsFalse(carId)) {
+            carService.changeCarState(carId, CarState.AVAILABLE);
         }
     }
 }

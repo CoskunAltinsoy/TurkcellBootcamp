@@ -7,10 +7,7 @@ import com.kodlama.io.rentacar.business.dto.requests.update.UpdateModelRequest;
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateRentalRequest;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateModelResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateRentalResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetAllModelsResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetAllRentalsResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetRentalResponse;
+import com.kodlama.io.rentacar.business.dto.responses.get.*;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateRentalResponse;
 import org.springframework.http.HttpStatus;
@@ -46,5 +43,9 @@ public class RentalsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id){
         rentalService.delete(id);
+    }
+    @PutMapping("/return/{id}")
+    public GetRentalResponse returnCarFromRented(@PathVariable("id") int carId){
+        return rentalService.returnCarFromRented(carId);
     }
 }
