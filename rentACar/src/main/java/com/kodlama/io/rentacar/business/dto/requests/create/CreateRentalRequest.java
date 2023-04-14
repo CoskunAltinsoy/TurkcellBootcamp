@@ -1,5 +1,6 @@
 package com.kodlama.io.rentacar.business.dto.requests.create;
 
+import com.kodlama.io.rentacar.business.dto.requests.PaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,4 +14,5 @@ public class CreateRentalRequest {
     private int carId;
     private double dailyPrice;
     private int rentedForDays;
+    private PaymentRequest paymentRequest;
 }

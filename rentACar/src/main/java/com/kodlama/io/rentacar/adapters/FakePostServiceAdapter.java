@@ -1,7 +1,9 @@
 package com.kodlama.io.rentacar.adapters;
 
-import java.util.Random;
+import org.springframework.stereotype.Service;
 
+import java.util.Random;
+@Service
 public class FakePostServiceAdapter implements PosService{
     @Override
     public void pay() {

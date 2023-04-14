@@ -1,6 +1,7 @@
 package com.kodlama.io.rentacar.business.concretes;
 
 import com.kodlama.io.rentacar.business.abstracts.CarService;
+import com.kodlama.io.rentacar.business.abstracts.PaymentService;
 import com.kodlama.io.rentacar.business.abstracts.RentalService;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateRentalRequest;
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateRentalRequest;
@@ -8,7 +9,7 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreateRentalRespons
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllRentalsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetRentalResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateRentalResponse;
-import com.kodlama.io.rentacar.entities.Car;
+import com.kodlama.io.rentacar.core.dto.CreateRentalPaymentRequest;
 import com.kodlama.io.rentacar.entities.Rental;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.RentalRepository;
@@ -24,15 +25,17 @@ public class RentalManager implements RentalService {
     private final RentalRepository rentalRepository;
     private final CarService carService;
     private final ModelMapper modelMapper;
+    private final PaymentService paymentService;
 
     public RentalManager(
             RentalRepository rentalRepository,
             CarService carService,
-            ModelMapper modelMapper
-    ) {
+            ModelMapper modelMapper,
+            PaymentService paymentService) {
         this.rentalRepository = rentalRepository;
         this.carService = carService;
         this.modelMapper = modelMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -64,6 +67,11 @@ public class RentalManager implements RentalService {
         rental.setTotalPrice(getTotalPrice(rental));
         rental.setCompleted(false);
         rental.setStartDate(LocalDate.now());
+
+        CreateRentalPaymentRequest createRentalPaymentRequest = new CreateRentalPaymentRequest();
+        modelMapper.map(createRentalRequest.getPaymentRequest(), createRentalPaymentRequest);
+        createRentalPaymentRequest.setPrice(getTotalPrice(rental));
+        paymentService.processRentalPayment(createRentalPaymentRequest);
 
         rentalRepository.save(rental);
         carService.changeCarState(createRentalRequest.getCarId(), CarState.RENTED);
