@@ -1,4 +1,4 @@
-package com.kodlama.io.rentacar.config;
+package com.kodlama.io.rentacar.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
