@@ -33,6 +33,6 @@ import org.hibernate.validator.constraints.Length;
         private int cardExpirationMonth;
 
         @NotBlank
-        @Length(min = 3, max = 3)
+        @Length(min = 3, max = 3, message = "The number must be 3 digits")
         private String cardCvv;
     }

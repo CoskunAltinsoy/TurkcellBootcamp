@@ -1,6 +1,7 @@
 package com.kodlama.io.rentacar.core.configuration.exception;
 
 import com.kodlama.io.rentacar.core.exceptions.BusinessException;
+import com.kodlama.io.rentacar.core.util.results.ExceptionDataResult;
 import com.kodlama.io.rentacar.core.util.results.ExceptionResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -27,13 +28,13 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    private ExceptionResult<Object> handleValidationException(MethodArgumentNotValidException exception) {
+    private ExceptionDataResult<Object> handleValidationException(MethodArgumentNotValidException exception) {
         Map<String, String> validationErrors = new HashMap<String, String>();
         for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        ExceptionResult<Object> exceptionResult = new ExceptionResult<Object>(
+        ExceptionDataResult<Object> exceptionResult = new ExceptionDataResult<Object>(
                 validationErrors,
                 MethodArgumentNotValidException.class,
                 HttpStatus.BAD_REQUEST.value(),
