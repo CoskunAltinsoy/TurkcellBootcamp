@@ -1,4 +1,4 @@
-package com.kodlama.io.rentacar.core.dto;
+package com.kodlama.io.rentacar.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

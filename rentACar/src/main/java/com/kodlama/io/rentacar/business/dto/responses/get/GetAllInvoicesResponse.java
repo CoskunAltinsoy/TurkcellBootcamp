@@ -1,22 +1,27 @@
 package com.kodlama.io.rentacar.business.dto.responses.get;
 
-import com.kodlama.io.rentacar.entities.enums.CarState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetCarResponse {
+public class GetAllInvoicesResponse {
+
     private int id;
-    private int modelId;
-    private int modelYear;
-    private String plate;
-    private CarState carState;
-    private double dailyPrice;
+    private int carId;
+    private String cardHolder;
     private String modelName;
-    private String modelBrandName;
+    private String brandName;
+    private String plate;
+    private int modelYear;
+    private double dailyPrice;
+    private double totalPrice;
+    private int rentedForDays;
+    private LocalDate rentedAt;
 }

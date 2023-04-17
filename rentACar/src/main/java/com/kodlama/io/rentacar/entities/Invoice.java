@@ -6,21 +6,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Setter
+import java.time.LocalDate;
+
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "payments")
-public class Payment {
+@Entity
+@Table(name = "invoices")
+public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String cardNumber;
     private String cardHolder;
-    private int cardExpirationYear;
-    private int cardExpirationMonth;
-    private String cardCvv;
-    private double balance;
+    private String modelName;
+    private String brandName;
+    private String plate;
+    private int modelYear;
+    private double dailyPrice;
+    private double totalPrice;
+    private int rentedForDays;
+    private LocalDate rentedAt;
+
 
 }

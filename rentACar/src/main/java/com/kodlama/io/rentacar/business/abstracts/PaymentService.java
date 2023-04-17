@@ -6,7 +6,7 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreatePaymentRespon
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllPaymentsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetPaymentResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdatePaymentResponse;
-import com.kodlama.io.rentacar.core.dto.CreateRentalPaymentRequest;
+import com.kodlama.io.rentacar.common.dto.CreateRentalPaymentRequest;
 
 import java.util.List;
 
