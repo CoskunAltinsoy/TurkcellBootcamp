@@ -5,11 +5,10 @@ import com.kodlama.io.rentacar.business.dto.requests.create.CreateInvoiceRequest
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateInvoiceRequest;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateInvoiceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllInvoicesResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetAllRentalsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetInvoiceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateInvoiceResponse;
+import com.kodlama.io.rentacar.business.rules.InvoiceBusinessRules;
 import com.kodlama.io.rentacar.entities.Invoice;
-import com.kodlama.io.rentacar.entities.Rental;
 import com.kodlama.io.rentacar.repository.InvoiceRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,13 +21,16 @@ import java.util.stream.Collectors;
 public class InvoiceManager implements InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final ModelMapper modelMapper;
+    private final InvoiceBusinessRules invoiceBusinessRules;
 
     public InvoiceManager(
             InvoiceRepository invoiceRepository,
-            ModelMapper modelMapper
-            ) {
+            ModelMapper modelMapper,
+            InvoiceBusinessRules invoiceBusinessRules
+    ) {
         this.invoiceRepository = invoiceRepository;
         this.modelMapper = modelMapper;
+        this.invoiceBusinessRules = invoiceBusinessRules;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public GetInvoiceResponse getById(int id) {
-        checkIfInvoiceExists(id);
+        invoiceBusinessRules.checkIfInvoiceExists(id);
         Invoice invoice = invoiceRepository.findById(id).orElseThrow();
         GetInvoiceResponse getInvoiceResponse = modelMapper.map(invoice, GetInvoiceResponse.class);
 
@@ -65,7 +67,7 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public UpdateInvoiceResponse update(UpdateInvoiceRequest updateInvoiceRequest) {
-        checkIfInvoiceExists(updateInvoiceRequest.getId());
+        invoiceBusinessRules.checkIfInvoiceExists(updateInvoiceRequest.getId());
         Invoice invoice = modelMapper.map(updateInvoiceRequest, Invoice.class);
         invoice.setTotalPrice(getTotalPrice(invoice));
         invoiceRepository.save(invoice);
@@ -77,16 +79,12 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public void delete(int id) {
-        checkIfInvoiceExists(id);
+        invoiceBusinessRules.checkIfInvoiceExists(id);
         invoiceRepository.deleteById(id);
     }
 
     private double getTotalPrice(Invoice invoice) {
         return invoice.getDailyPrice() * invoice.getRentedForDays();
     }
-    private void checkIfInvoiceExists(int id) {
-        if (!invoiceRepository.existsById(id)) {
-            throw new RuntimeException("");
-        }
-    }
+
 }

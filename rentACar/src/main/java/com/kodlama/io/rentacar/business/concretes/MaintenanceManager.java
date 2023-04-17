@@ -3,15 +3,12 @@ package com.kodlama.io.rentacar.business.concretes;
 import com.kodlama.io.rentacar.business.abstracts.CarService;
 import com.kodlama.io.rentacar.business.abstracts.MaintenanceService;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateMaintenanceRequest;
-import com.kodlama.io.rentacar.business.dto.requests.update.UpdateCarRequest;
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateMaintenanceRequest;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateMaintenanceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllMaintenancesResponse;
-import com.kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetMaintenanceResponse;
-import com.kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateMaintenanceResponse;
-import com.kodlama.io.rentacar.entities.Car;
+import com.kodlama.io.rentacar.business.rules.MaintenanceBusinessRules;
 import com.kodlama.io.rentacar.entities.Maintenance;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.MaintenanceRepository;
@@ -19,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,15 +24,18 @@ public class MaintenanceManager implements MaintenanceService {
     private final MaintenanceRepository maintenanceRepository;
     private final CarService carService;
     private final ModelMapper modelMapper;
+    private final MaintenanceBusinessRules maintenanceBusinessRules;
 
     public MaintenanceManager(
             MaintenanceRepository maintenanceRepository,
             CarService carService,
-            ModelMapper modelMapper
+            ModelMapper modelMapper,
+            MaintenanceBusinessRules maintenanceBusinessRules
     ) {
         this.maintenanceRepository = maintenanceRepository;
         this.carService = carService;
         this.modelMapper = modelMapper;
+        this.maintenanceBusinessRules = maintenanceBusinessRules;
     }
 
     @Override
@@ -60,8 +59,8 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public CreateMaintenanceResponse add(CreateMaintenanceRequest createMaintenanceRequest) {
-        checkIfCarIsInMaintenance(createMaintenanceRequest.getCarId());
-        checkCarAvailabilityForMaintenance(createMaintenanceRequest.getCarId());
+        maintenanceBusinessRules.checkIfCarIsInMaintenance(createMaintenanceRequest.getCarId());
+        maintenanceBusinessRules.checkCarAvailabilityForMaintenance(carService.getById(createMaintenanceRequest.getCarId()).getCarState());
 
         Maintenance maintenance = modelMapper.map(createMaintenanceRequest, Maintenance.class);
         maintenance.setId(0);
@@ -79,7 +78,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public UpdateMaintenanceResponse update(UpdateMaintenanceRequest updateMaintenanceRequest) {
-        checkIfMaintenanceExistsById(updateMaintenanceRequest.getId());
+        maintenanceBusinessRules.checkIfMaintenanceExistsById(updateMaintenanceRequest.getId());
         Maintenance maintenance = modelMapper.map(updateMaintenanceRequest, Maintenance.class);
         this.maintenanceRepository.save(maintenance);
 
@@ -90,14 +89,14 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public void delete(int id) {
-        checkIfMaintenanceExistsById(id);
+        maintenanceBusinessRules.checkIfMaintenanceExistsById(id);
         makeCarAvailableIfIsCompletedFalse(id);
         this.maintenanceRepository.deleteById(id);
     }
 
     @Override
     public GetMaintenanceResponse returnCarFromMaintenance(int carId) {
-        checkIfCarIsNotInMaintenance(carId);
+        maintenanceBusinessRules.checkIfCarIsNotInMaintenance(carId);
         Maintenance maintenance = maintenanceRepository.findByCarIdAndIsCompletedIsFalse(carId);
         maintenance.setCompleted(true);
         maintenance.setEndDate(LocalDate.now());
@@ -107,28 +106,7 @@ public class MaintenanceManager implements MaintenanceService {
                 modelMapper.map(maintenance, GetMaintenanceResponse.class);
         return getMaintenanceResponse;
     }
-    private void checkIfCarIsInMaintenance(int carId){
-        if(maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(carId)){
-            throw new RuntimeException("This car is in maintenance.");
-        }
-    }
-    private void checkIfCarIsNotInMaintenance(int carId) {
-        if (!maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(carId)) {
-            throw new RuntimeException("This car is no in maintenance");
-        }
-    }
 
-    private void checkCarAvailabilityForMaintenance(int carId){
-        if(!carService.getById(carId).getCarState().equals(CarState.AVAILABLE)){
-            throw new RuntimeException("This car cannot be serviced. This car is rented");
-        }
-    }
-
-    private void checkIfMaintenanceExistsById(int id){
-        if(!maintenanceRepository.existsById(id)){
-            throw new RuntimeException("This maintenance info is not registered in the system.");
-        }
-    }
 
     private void makeCarAvailableIfIsCompletedFalse(int id) {
         int carId = maintenanceRepository.findById(id).get().getCar().getId();

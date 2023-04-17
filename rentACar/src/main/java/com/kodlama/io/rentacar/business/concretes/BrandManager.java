@@ -7,13 +7,12 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreateBrandResponse
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllBrandsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse;
-import com.kodlama.io.rentacar.config.ModelMapperService;
+import com.kodlama.io.rentacar.business.rules.BrandBusinessRules;
 import com.kodlama.io.rentacar.entities.Brand;
 import com.kodlama.io.rentacar.repository.BrandRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +20,16 @@ import java.util.stream.Collectors;
 public class BrandManager implements BrandService {
     private final BrandRepository brandRepository;
     private final ModelMapper modelMapper;
+    private final BrandBusinessRules brandBusinessRules;
 
     public BrandManager(
             BrandRepository brandRepository,
-            ModelMapper modelMapper
+            ModelMapper modelMapper,
+            BrandBusinessRules brandBusinessRules
     ) {
         this.brandRepository = brandRepository;
         this.modelMapper = modelMapper;
+        this.brandBusinessRules = brandBusinessRules;
     }
     @Override
     public List<GetAllBrandsResponse> getAll() {
@@ -39,7 +41,7 @@ public class BrandManager implements BrandService {
     }
     @Override
     public GetBrandResponse getById(int id) {
-        checkIfBrandExistsById(id);
+        brandBusinessRules.checkIfBrandExistsById(id);
         Brand brand = brandRepository.findById(id).orElseThrow();
         GetBrandResponse getBrandResponse = modelMapper.map(brand, GetBrandResponse.class);
 
@@ -47,7 +49,7 @@ public class BrandManager implements BrandService {
     }
     @Override
     public CreateBrandResponse add(CreateBrandRequest createBrandRequest) {
-        checkIfBrandExistByName(createBrandRequest.getName());
+        brandBusinessRules.checkIfBrandExistByName(createBrandRequest.getName());
         Brand brand = modelMapper.map(createBrandRequest, Brand.class);
         brand.setId(0);
         brandRepository.save(brand);
@@ -58,7 +60,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public UpdateBrandResponse update(UpdateBrandRequest updateBrandRequest) {
-        checkIfBrandExistsById(updateBrandRequest.getId());
+        brandBusinessRules.checkIfBrandExistsById(updateBrandRequest.getId());
         Brand brand = modelMapper.map(updateBrandRequest, Brand.class);
         brandRepository.save(brand);
 
@@ -69,18 +71,9 @@ public class BrandManager implements BrandService {
 
     @Override
     public void delete(int id) {
-        checkIfBrandExistsById(id);
+        brandBusinessRules.checkIfBrandExistsById(id);
         brandRepository.deleteById(id);
     }
 
-    private void checkIfBrandExistByName(String name){
-        if (brandRepository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("This brand is registered in the system");
-        }
-    }
-    private void checkIfBrandExistsById(int id) {
-        if (!brandRepository.existsById(id)) {
-            throw new RuntimeException("This brand is not registered in the system");
-        }
-    }
+
 }

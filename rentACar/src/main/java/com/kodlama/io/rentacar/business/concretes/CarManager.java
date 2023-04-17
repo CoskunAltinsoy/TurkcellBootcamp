@@ -7,6 +7,7 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreateCarResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
+import com.kodlama.io.rentacar.business.rules.CarBusinessRules;
 import com.kodlama.io.rentacar.entities.Car;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.CarRepository;
@@ -20,11 +21,15 @@ import java.util.stream.Collectors;
 public class CarManager implements CarService {
     private final CarRepository carRepository;
     private final ModelMapper modelMapper;
+    private final CarBusinessRules carBusinessRules;
 
     public CarManager(CarRepository carRepository,
-                      ModelMapper modelMapper) {
+                      ModelMapper modelMapper,
+                      CarBusinessRules carBusinessRules
+    ) {
         this.carRepository = carRepository;
         this.modelMapper = modelMapper;
+        this.carBusinessRules = carBusinessRules;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class CarManager implements CarService {
 
     @Override
     public GetCarResponse getById(int id) {
-        checkIfCarExistsById(id);
+        carBusinessRules.checkIfCarExistsById(id);
         Car car = this.carRepository.findById(id).orElseThrow();
         GetCarResponse getCarResponse = modelMapper.map(car, GetCarResponse.class);
 
@@ -59,7 +64,7 @@ public class CarManager implements CarService {
 
     @Override
     public UpdateCarResponse update(UpdateCarRequest updateCarRequest) {
-        checkIfCarExistsById(updateCarRequest.getId());
+        carBusinessRules.checkIfCarExistsById(updateCarRequest.getId());
         Car car = modelMapper.map(updateCarRequest, Car.class);
         this.carRepository.save(car);
 
@@ -69,7 +74,7 @@ public class CarManager implements CarService {
 
     @Override
     public void delete(int id) {
-        checkIfCarExistsById(id);
+        carBusinessRules.checkIfCarExistsById(id);
         this.carRepository.deleteById(id);
     }
 
@@ -80,11 +85,6 @@ public class CarManager implements CarService {
         carRepository.save(car);
     }
 
-    private void checkIfCarExistsById(int id) {
-        if (!carRepository.existsById(id)) {
-            throw new RuntimeException("This car is not registered in the system");
-        }
-    }
     private List<Car> filterCarsByMaintenanceState(boolean isMaintenanceIncluded) {
         if(isMaintenanceIncluded){
             return carRepository.findAllByCarStateIsNot(CarState.MAINTENANCE);

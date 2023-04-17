@@ -7,6 +7,7 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreateModelResponse
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllModelsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse;
+import com.kodlama.io.rentacar.business.rules.ModelBusinessRules;
 import com.kodlama.io.rentacar.entities.Model;
 import com.kodlama.io.rentacar.repository.ModelRepository;
 import org.modelmapper.ModelMapper;
@@ -19,10 +20,16 @@ import java.util.stream.Collectors;
 public class ModelManager implements ModelService {
     private final ModelRepository modelRepository;
     private final ModelMapper modelMapper;
+    private final ModelBusinessRules modelBusinessRules;
 
-    public ModelManager(ModelRepository modelRepository, ModelMapper modelMapper) {
+    public ModelManager(
+            ModelRepository modelRepository,
+            ModelMapper modelMapper,
+            ModelBusinessRules modelBusinessRules
+    ) {
         this.modelRepository = modelRepository;
         this.modelMapper = modelMapper;
+        this.modelBusinessRules = modelBusinessRules;
     }
 
     @Override
@@ -38,7 +45,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public GetModelResponse getById(int id) {
-        checkIfModelExistsById(id);
+        modelBusinessRules.checkIfModelExistsById(id);
         Model model = modelRepository.findById(id).orElseThrow();
         GetModelResponse getModelResponse = modelMapper.map(model, GetModelResponse.class);
 
@@ -47,7 +54,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public CreateModelResponse add(CreateModelRequest createModelRequest) {
-        checkIfModelExistByName(createModelRequest.getName());
+        modelBusinessRules.checkIfModelExistByName(createModelRequest.getName());
         Model model = modelMapper.map(createModelRequest, Model.class);
         model.setId(0);
         modelRepository.save(model);
@@ -58,7 +65,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public UpdateModelResponse update(UpdateModelRequest updateModelRequest) {
-        checkIfModelExistsById(updateModelRequest.getId());
+        modelBusinessRules.checkIfModelExistsById(updateModelRequest.getId());
         Model model = modelMapper.map(updateModelRequest, Model.class);
         modelRepository.save(model);
 
@@ -71,14 +78,5 @@ public class ModelManager implements ModelService {
         modelRepository.deleteById(id);
     }
 
-    private void checkIfModelExistByName(String name){
-        if (modelRepository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("This model is registered in the system");
-        }
-    }
-    private void checkIfModelExistsById(int id) {
-        if (!modelRepository.existsById(id)) {
-            throw new RuntimeException("This model is not registered in the system");
-        }
-    }
+
 }

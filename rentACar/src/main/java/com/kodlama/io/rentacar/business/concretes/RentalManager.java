@@ -12,6 +12,7 @@ import com.kodlama.io.rentacar.business.dto.responses.get.GetAllRentalsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetRentalResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateRentalResponse;
+import com.kodlama.io.rentacar.business.rules.RentalBusinessRules;
 import com.kodlama.io.rentacar.common.dto.CreateRentalPaymentRequest;
 import com.kodlama.io.rentacar.entities.Rental;
 import com.kodlama.io.rentacar.entities.enums.CarState;
@@ -30,19 +31,22 @@ public class RentalManager implements RentalService {
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
     private final InvoiceService invoiceService;
+    private final RentalBusinessRules rentalBusinessRules;
 
     public RentalManager(
             RentalRepository rentalRepository,
             CarService carService,
             ModelMapper modelMapper,
             PaymentService paymentService,
-            InvoiceService invoiceService)
-            {
+            InvoiceService invoiceService,
+            RentalBusinessRules rentalBusinessRules
+    ){
         this.rentalRepository = rentalRepository;
         this.carService = carService;
         this.modelMapper = modelMapper;
         this.paymentService = paymentService;
         this.invoiceService = invoiceService;
+        this.rentalBusinessRules = rentalBusinessRules;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class RentalManager implements RentalService {
 
     @Override
     public GetRentalResponse getById(int id) {
-        checkIfRentalExistsById(id);
+        rentalBusinessRules.checkIfRentalExistsById(id);
         Rental rental = rentalRepository.findById(id).orElseThrow();
         GetRentalResponse getRentalResponse
                 = modelMapper.map(rental,GetRentalResponse.class);
@@ -66,8 +70,8 @@ public class RentalManager implements RentalService {
 
     @Override
     public CreateRentalResponse add(CreateRentalRequest createRentalRequest) {
-        checkIfCarInRented(createRentalRequest.getCarId());
-        checkIfCarAvailable(createRentalRequest.getCarId());
+        rentalBusinessRules.checkIfCarInRented(createRentalRequest.getCarId());
+        rentalBusinessRules.checkIfCarAvailable(carService.getById(createRentalRequest.getCarId()).getCarState());
 
         Rental rental = modelMapper.map(createRentalRequest, Rental.class);
         rental.setId(0);
@@ -95,7 +99,7 @@ public class RentalManager implements RentalService {
 
     @Override
     public UpdateRentalResponse update(UpdateRentalRequest updateRentalRequest) {
-        checkIfRentalExistsById(updateRentalRequest.getId());
+        rentalBusinessRules.checkIfRentalExistsById(updateRentalRequest.getId());
         Rental rental = modelMapper.map(updateRentalRequest, Rental.class);
         rental.setTotalPrice(getTotalPrice(rental));
         rentalRepository.save(rental);
@@ -106,14 +110,14 @@ public class RentalManager implements RentalService {
 
     @Override
     public void delete(int id) {
-        checkIfRentalExistsById(id);
+        rentalBusinessRules.checkIfRentalExistsById(id);
         makeCarAvailableIfIsCompletedFalse(id);
         rentalRepository.deleteById(id);
     }
 
     @Override
     public GetRentalResponse returnCarFromRented(int carId) {
-        checkIfCarIsNotInRented(carId);
+        rentalBusinessRules.checkIfCarIsNotInRented(carId);
         Rental rental = rentalRepository.findByCarIdAndIsCompletedIsFalse(carId);
         rental.setCompleted(true);
         rentalRepository.save(rental);
@@ -124,30 +128,8 @@ public class RentalManager implements RentalService {
 
     }
 
-    private void checkIfCarAvailable(int carId){
-       if(!carService.getById(carId).getCarState().equals(CarState.AVAILABLE)){
-           throw new RuntimeException("Car is not available");
-       };
-    }
-
-    private void checkIfRentalExistsById(int id) {
-        if (!rentalRepository.existsById(id)) {
-            throw new RuntimeException("There is no rental information available");
-        }
-    }
     private double getTotalPrice(Rental rental) {
         return rental.getDailyPrice() * rental.getRentedForDays();
-    }
-    private void checkIfCarInRented(int carId){
-        if(rentalRepository.existsByCarIdAndIsCompletedIsFalse(carId)){
-            throw new RuntimeException("This car is in rented");
-        }
-    }
-
-    private void checkIfCarIsNotInRented(int carId) {
-        if (!rentalRepository.existsByCarIdAndIsCompletedIsFalse(carId)) {
-            throw new RuntimeException("This car is no in rented");
-        }
     }
 
     private void makeCarAvailableIfIsCompletedFalse(int id) {
