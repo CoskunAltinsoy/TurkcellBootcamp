@@ -8,22 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 public class ExceptionResult<T> {
+    private LocalDate timestamp;
+    private T message;
     private String type;
     private Integer httpStatus;
-    private String message;
 
 
-
-    public ExceptionResult(Class<T> type,Integer httpStatus ,String message) {
-        this.type = convertToUpperCaseWithUnderscores(type.getSimpleName());
-        this.httpStatus = httpStatus;
+    public ExceptionResult(T message,String type,Integer httpStatus) {
+        this.timestamp = LocalDate.now();
         this.message = message;
+        this.type = type;
+        this.httpStatus = httpStatus;
     }
 
-    private String convertToUpperCaseWithUnderscores(String camelCaseString) {
-        return camelCaseString.replaceAll("(.)(\\p{Upper})", "$1_$2").toUpperCase();
-    }
 }
