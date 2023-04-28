@@ -10,6 +10,7 @@ import com.kodlama.io.rentacar.business.dto.responses.create.CreateRentalRespons
 import com.kodlama.io.rentacar.business.dto.responses.get.*;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateRentalResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class RentalsController {
     }
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateRentalResponse add(@RequestBody CreateRentalRequest createRentalRequest){
+    public CreateRentalResponse add(@Valid @RequestBody CreateRentalRequest createRentalRequest){
         return rentalService.add(createRentalRequest);
     }
     @PutMapping()

@@ -41,7 +41,7 @@ public class GlobalRestExceptionHandler {
                 ExceptionTypes.Exception.Validation,
                 HttpStatus.BAD_REQUEST.value()
                 );
-        
+
         return exceptionResult;
     }
 

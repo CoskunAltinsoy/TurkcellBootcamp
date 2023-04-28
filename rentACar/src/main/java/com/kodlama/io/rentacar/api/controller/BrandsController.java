@@ -8,6 +8,7 @@ import com.kodlama.io.rentacar.business.dto.responses.get.GetAllBrandsResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse;
 import com.kodlama.io.rentacar.entities.Brand;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class BrandsController {
     }
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateBrandResponse add(@RequestBody CreateBrandRequest createBrandRequest){
+    public CreateBrandResponse add(@Valid @RequestBody CreateBrandRequest createBrandRequest){
         return brandService.add(createBrandRequest);
     }
     @PutMapping()

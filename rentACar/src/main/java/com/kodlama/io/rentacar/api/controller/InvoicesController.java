@@ -13,6 +13,7 @@ import com.kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetInvoiceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse;
 import com.kodlama.io.rentacar.business.dto.responses.update.UpdateInvoiceResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,7 @@ public class InvoicesController {
     }
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateInvoiceResponse add(@RequestBody CreateInvoiceRequest createInvoiceRequest){
+    public CreateInvoiceResponse add(@Valid @RequestBody CreateInvoiceRequest createInvoiceRequest){
         return invoiceService.add(createInvoiceRequest);
     }
     @PutMapping()
