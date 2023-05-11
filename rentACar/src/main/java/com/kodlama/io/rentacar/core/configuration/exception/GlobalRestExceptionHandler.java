@@ -64,15 +64,4 @@ public class GlobalRestExceptionHandler {
                 HttpStatus.CONFLICT.value()
         );
     }
-
-    @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
-    private ExceptionResult<Object> handleValidationExceptionException(ValidationException exception) {
-        return new ExceptionResult<Object>(
-                exception.getMessage(),
-                ExceptionTypes.Exception.Validation,
-                HttpStatus.CONFLICT.value()
-        );
-    }
-
 }

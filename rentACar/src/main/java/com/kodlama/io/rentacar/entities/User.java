@@ -19,6 +19,7 @@ public class User {
     private int id;
     private String email;
     private String password;
+    private String resetToken;
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
