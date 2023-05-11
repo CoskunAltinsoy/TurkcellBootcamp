@@ -18,7 +18,6 @@ public class ExceptionResult<T> {
     private String type;
     private Integer httpStatus;
 
-
     public ExceptionResult(T message,String type,Integer httpStatus) {
         this.timestamp = LocalDate.now();
         this.message = message;
