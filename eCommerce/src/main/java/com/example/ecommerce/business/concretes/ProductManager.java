@@ -1,23 +1,38 @@
 package com.example.ecommerce.business.concretes;
 
 import com.example.ecommerce.business.abstracts.ProductService;
+import com.example.ecommerce.business.dto.request.create.CreateProductRequest;
+import com.example.ecommerce.business.dto.request.update.UpdateProductRequest;
+import com.example.ecommerce.business.dto.response.create.CreateProductResponse;
+import com.example.ecommerce.business.dto.response.get.GetAllProductResponse;
+import com.example.ecommerce.business.dto.response.get.GetProductResponse;
+import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
 import com.example.ecommerce.entities.concretes.Product;
+import com.example.ecommerce.entities.concretes.enums.ProductState;
 import com.example.ecommerce.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import java.util.List;
-@Service
+import java.util.stream.Collectors;
 
+@Service
+@RequiredArgsConstructor
 public class ProductManager implements ProductService {
     private final ProductRepository productRepository;
-
-    public ProductManager(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
-
+    private final ModelMapper modelMapper;
     @Override
-    public Product add(Product product) {
-       return productRepository.save(product);
+    public CreateProductResponse add(CreateProductRequest createProductRequest) {
+        Product product = modelMapper.map(createProductRequest, Product.class);
+        product.setId(0);
+        productRepository.save(product);
+
+        CreateProductResponse createProductResponse =
+                modelMapper.map(product, CreateProductResponse.class);
+
+       return createProductResponse;
     }
 
     @Override
@@ -26,23 +41,41 @@ public class ProductManager implements ProductService {
     }
 
     @Override
-    public Product update(Product product) {
-       Product updatedProduct = getById(product.getId());
-       updatedProduct.setName(product.getName());
-       updatedProduct.setQuantity(product.getQuantity());
-       updatedProduct.setUnitPrice(product.getUnitPrice());
-       updatedProduct.setDescription(product.getDescription());
-       return productRepository.save(updatedProduct);
+    public UpdateProductResponse update(UpdateProductRequest updateProductRequest) {
+        Product product = modelMapper.map(updateProductRequest, Product.class);
+        productRepository.save(product);
+
+        UpdateProductResponse updateProductResponse =
+                modelMapper.map(product, UpdateProductResponse.class);
+
+        return updateProductResponse;
     }
 
     @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public List<GetAllProductResponse> getAll() {
+        List<Product> products = productRepository.findAll();
+        List<GetAllProductResponse> getAllProductResponses = products
+                .stream()
+                .map(product -> modelMapper.map(product, GetAllProductResponse.class))
+                .collect(Collectors.toList());
+
+        return getAllProductResponses;
     }
 
     @Override
-    public Product getById(int id) {
-        return productRepository.findById(id).orElseThrow();
+    public GetProductResponse getById(int id) {
+        Product product = productRepository.findById(id).orElseThrow();
+        GetProductResponse getProductResponse =
+                modelMapper.map(product, GetProductResponse.class);
+
+        return getProductResponse;
+    }
+
+    @Override
+    public void changeState(int carId, ProductState productState) {
+        Product product = productRepository.findById(carId).orElseThrow();
+        product.setProductState(productState);
+        productRepository.save(product);
     }
 
     private boolean checkProduct(Product product){

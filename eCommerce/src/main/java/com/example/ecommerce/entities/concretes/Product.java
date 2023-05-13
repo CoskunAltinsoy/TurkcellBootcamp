@@ -1,5 +1,6 @@
 package com.example.ecommerce.entities.concretes;
 
+import com.example.ecommerce.entities.concretes.enums.ProductState;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,14 +22,12 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "name")
     private String name;
-    @Column(name = "quantity")
     private int quantity;
-    @Column(name = "unit_price")
     private double unitPrice;
-    @Column(name = "description")
     private String description;
+    @Enumerated(value = EnumType.STRING)
+    private ProductState productState;
 
     @JsonManagedReference
     @ManyToMany

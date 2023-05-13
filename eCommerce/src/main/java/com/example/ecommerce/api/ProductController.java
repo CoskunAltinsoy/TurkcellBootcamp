@@ -1,26 +1,30 @@
 package com.example.ecommerce.api;
 
 import com.example.ecommerce.business.abstracts.ProductService;
+import com.example.ecommerce.business.dto.request.create.CreateProductRequest;
+import com.example.ecommerce.business.dto.request.update.UpdateProductRequest;
+import com.example.ecommerce.business.dto.response.create.CreateProductResponse;
+import com.example.ecommerce.business.dto.response.get.GetAllProductResponse;
+import com.example.ecommerce.business.dto.response.get.GetProductResponse;
+import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
 import com.example.ecommerce.entities.concretes.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Product> add(@RequestBody Product product){
-        productService.add(product);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<CreateProductResponse> add(@RequestBody CreateProductRequest createProductRequest){
+        return ResponseEntity.ok(productService.add(createProductRequest));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") int id){
@@ -28,17 +32,16 @@ public class ProductController {
         return (ResponseEntity<Void>) ResponseEntity.ok();
     }
     @PutMapping ()
-    public ResponseEntity<Product> update(@RequestBody Product product){
-        productService.update(product);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<UpdateProductResponse> update(@RequestBody UpdateProductRequest updateProductRequest){
+        return ResponseEntity.ok(productService.update(updateProductRequest));
     }
     @GetMapping()
-    public ResponseEntity<List<Product>> getAll(){
+    public ResponseEntity<List<GetAllProductResponse>> getAll(){
         return ResponseEntity.ok(productService.getAll());
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Product> getById(@PathVariable("id") int id){;
+    public ResponseEntity<GetProductResponse> getById(@PathVariable("id") int id){;
         return ResponseEntity.ok(productService.getById(id));
     }
 }
