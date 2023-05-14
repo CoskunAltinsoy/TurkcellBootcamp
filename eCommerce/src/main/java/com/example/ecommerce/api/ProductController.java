@@ -36,8 +36,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(updateProductRequest));
     }
     @GetMapping()
-    public ResponseEntity<List<GetAllProductResponse>> getAll(){
-        return ResponseEntity.ok(productService.getAll());
+    public ResponseEntity<List<GetAllProductResponse>> getAll
+            (@RequestParam(defaultValue = "true") boolean includeAvailable){
+        return ResponseEntity.ok(productService.getAll(includeAvailable));
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

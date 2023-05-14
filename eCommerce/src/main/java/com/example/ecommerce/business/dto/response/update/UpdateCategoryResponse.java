@@ -1,4 +1,4 @@
-package com.example.ecommerce.business.dto.request.update;
+package com.example.ecommerce.business.dto.response.update;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProductRequest {
+public class UpdateCategoryResponse {
     private int id;
     private String name;
-    private int quantity;
-    private double unitPrice;
-    private String description;
-    private int categoryId;
 }

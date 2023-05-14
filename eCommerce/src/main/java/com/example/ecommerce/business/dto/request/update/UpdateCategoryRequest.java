@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProductRequest {
+public class UpdateCategoryRequest {
     private int id;
     private String name;
-    private int quantity;
-    private double unitPrice;
-    private String description;
-    private int categoryId;
 }

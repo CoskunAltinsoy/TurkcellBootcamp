@@ -15,16 +15,6 @@ public class ECommerceApplication {
         SpringApplication.run(ECommerceApplication.class, args);
     }
 
-    @Bean
-    public OpenAPI customOpenAPI(@Value("${application-description}") String description,
-                                 @Value("${application-version}") String version){
-        return new OpenAPI()
-                .info(new Info()
-                        .title("DefineX Final Case API")
-                        .version(version)
-                        .description(description)
-                        .license(new License().name("DefineX Final Case Licence")));
 
-    }
 
 }

@@ -1,6 +1,6 @@
 package com.example.ecommerce.business.dto.response.update;
 
-import com.example.ecommerce.entities.concretes.enums.ProductState;
+import com.example.ecommerce.entities.concretes.enums.ProductStockState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +16,5 @@ public class UpdateProductResponse {
     private int quantity;
     private double unitPrice;
     private String description;
-    private ProductState productState;
+    private ProductStockState productStockState;
 }

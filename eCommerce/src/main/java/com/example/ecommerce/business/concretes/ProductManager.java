@@ -8,12 +8,11 @@ import com.example.ecommerce.business.dto.response.get.GetAllProductResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
 import com.example.ecommerce.entities.concretes.Product;
-import com.example.ecommerce.entities.concretes.enums.ProductState;
+import com.example.ecommerce.entities.concretes.enums.ProductStockState;
 import com.example.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,8 +51,8 @@ public class ProductManager implements ProductService {
     }
 
     @Override
-    public List<GetAllProductResponse> getAll() {
-        List<Product> products = productRepository.findAll();
+    public List<GetAllProductResponse> getAll(boolean includeAvailable) {
+        List<Product> products = filterProductsByProductState(includeAvailable);
         List<GetAllProductResponse> getAllProductResponses = products
                 .stream()
                 .map(product -> modelMapper.map(product, GetAllProductResponse.class))
@@ -72,10 +71,16 @@ public class ProductManager implements ProductService {
     }
 
     @Override
-    public void changeState(int carId, ProductState productState) {
+    public void changeState(int carId, ProductStockState productStockState) {
         Product product = productRepository.findById(carId).orElseThrow();
-        product.setProductState(productState);
+        product.setProductStockState(productStockState);
         productRepository.save(product);
+    }
+    private List<Product> filterProductsByProductState(boolean includeAvailable){
+        if (includeAvailable){
+            return productRepository.findAll();
+        }
+        return productRepository.findAllByProductStateIsNot(ProductStockState.AVAILABLE);
     }
 
     private boolean checkProduct(Product product){
