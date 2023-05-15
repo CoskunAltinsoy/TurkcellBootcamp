@@ -1,9 +1,11 @@
 package com.kodlama.io.rentacar.api.controller;
 
 import com.kodlama.io.rentacar.business.abstracts.IndividualCustomerService;
+import com.kodlama.io.rentacar.business.dto.requests.AuthRequest;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateIndividualCustomerRequest;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateInvoiceRequest;
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateInvoiceRequest;
+import com.kodlama.io.rentacar.business.dto.responses.AuthResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateIndividualCustomerResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateInvoiceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllIndividualCustomerResponse;
@@ -36,6 +38,10 @@ public class IndividualCustomersController {
     @ResponseStatus(HttpStatus.CREATED)
     public CreateIndividualCustomerResponse register(@RequestBody CreateIndividualCustomerRequest createIndividualCustomerRequest){
         return individualCustomerService.register(createIndividualCustomerRequest);
+    }
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody AuthRequest authRequest){
+        return individualCustomerService.login(authRequest);
     }
 
     @DeleteMapping("/{id}")

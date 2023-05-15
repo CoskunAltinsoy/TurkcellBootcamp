@@ -4,11 +4,9 @@ import com.example.ecommerce.business.abstracts.CategoryService;
 import com.example.ecommerce.business.dto.request.create.CreateCategoryRequest;
 import com.example.ecommerce.business.dto.request.update.UpdateCategoryRequest;
 import com.example.ecommerce.business.dto.response.create.CreateCategoryResponse;
-import com.example.ecommerce.business.dto.response.get.GetAllCategoryResponse;
+import com.example.ecommerce.business.dto.response.get.GetAllCategoriesResponse;
 import com.example.ecommerce.business.dto.response.get.GetCategoryResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateCategoryResponse;
-import com.example.ecommerce.business.dto.response.update.UpdateCategoryResponse;
-import com.example.ecommerce.entities.concretes.Category;
 import com.example.ecommerce.entities.concretes.Category;
 import com.example.ecommerce.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,14 +52,14 @@ public class CategoryManager implements CategoryService {
     }
 
     @Override
-    public List<GetAllCategoryResponse> getAll() {
+    public List<GetAllCategoriesResponse> getAll() {
         List<Category> categories = categoryRepository.findAll();
-        List<GetAllCategoryResponse> getAllCategoryResponses = categories
+        List<GetAllCategoriesResponse> getAllCategoriesRespons = categories
                 .stream()
-                .map(category -> modelMapper.map(category, GetAllCategoryResponse.class))
+                .map(category -> modelMapper.map(category, GetAllCategoriesResponse.class))
                 .collect(Collectors.toList());
 
-        return getAllCategoryResponses;
+        return getAllCategoriesRespons;
     }
 
     @Override

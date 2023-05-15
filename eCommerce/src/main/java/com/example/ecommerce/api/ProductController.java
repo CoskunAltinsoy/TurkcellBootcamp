@@ -4,10 +4,9 @@ import com.example.ecommerce.business.abstracts.ProductService;
 import com.example.ecommerce.business.dto.request.create.CreateProductRequest;
 import com.example.ecommerce.business.dto.request.update.UpdateProductRequest;
 import com.example.ecommerce.business.dto.response.create.CreateProductResponse;
-import com.example.ecommerce.business.dto.response.get.GetAllProductResponse;
+import com.example.ecommerce.business.dto.response.get.GetAllProductsResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
-import com.example.ecommerce.entities.concretes.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(updateProductRequest));
     }
     @GetMapping()
-    public ResponseEntity<List<GetAllProductResponse>> getAll
+    public ResponseEntity<List<GetAllProductsResponse>> getAll
             (@RequestParam(defaultValue = "true") boolean includeAvailable){
         return ResponseEntity.ok(productService.getAll(includeAvailable));
     }

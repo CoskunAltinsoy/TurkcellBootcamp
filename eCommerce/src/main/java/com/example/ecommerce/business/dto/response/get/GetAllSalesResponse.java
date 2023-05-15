@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAllCategoryResponse {
+public class GetAllSalesResponse {
     private int id;
-    private String name;
+    private double totalPrice;
+    private String description;
 }
