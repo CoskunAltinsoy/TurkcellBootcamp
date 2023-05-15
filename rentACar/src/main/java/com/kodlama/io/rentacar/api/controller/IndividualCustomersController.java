@@ -2,10 +2,16 @@ package com.kodlama.io.rentacar.api.controller;
 
 import com.kodlama.io.rentacar.business.abstracts.IndividualCustomerService;
 import com.kodlama.io.rentacar.business.dto.requests.AuthRequest;
+import com.kodlama.io.rentacar.business.dto.requests.PasswordRequest;
+import com.kodlama.io.rentacar.business.dto.requests.ResetPasswordRequest;
+import com.kodlama.io.rentacar.business.dto.requests.TokenPasswordRequest;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateIndividualCustomerRequest;
 import com.kodlama.io.rentacar.business.dto.requests.create.CreateInvoiceRequest;
 import com.kodlama.io.rentacar.business.dto.requests.update.UpdateInvoiceRequest;
 import com.kodlama.io.rentacar.business.dto.responses.AuthResponse;
+import com.kodlama.io.rentacar.business.dto.responses.PasswordResponse;
+import com.kodlama.io.rentacar.business.dto.responses.ResetPasswordResponse;
+import com.kodlama.io.rentacar.business.dto.responses.TokenResetResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateIndividualCustomerResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateInvoiceResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllIndividualCustomerResponse;
@@ -48,5 +54,19 @@ public class IndividualCustomersController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id){
         individualCustomerService.delete(id);
+    }
+    @PostMapping("/changePassword")
+    public PasswordResponse changePassword(
+            @RequestBody PasswordRequest createPasswordRequest){
+        return individualCustomerService.changePassword(createPasswordRequest);
+    }
+    @PostMapping("/forgotPassword")
+    public TokenResetResponse forgotPassword(
+            @RequestBody ResetPasswordRequest createResetPasswordRequest){
+        return individualCustomerService.forgotPassword(createResetPasswordRequest);
+    } @PutMapping("/resetPassword")
+    public ResetPasswordResponse resetPassword(@RequestParam String token,
+                                               @RequestBody TokenPasswordRequest createTokenPasswordRequest){
+        return individualCustomerService.resetPassword(token, createTokenPasswordRequest);
     }
 }
