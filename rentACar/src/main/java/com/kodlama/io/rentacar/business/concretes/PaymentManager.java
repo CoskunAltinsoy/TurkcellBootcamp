@@ -12,28 +12,18 @@ import com.kodlama.io.rentacar.business.rules.PaymentBusinessRules;
 import com.kodlama.io.rentacar.common.dto.CreateRentalPaymentRequest;
 import com.kodlama.io.rentacar.entities.Payment;
 import com.kodlama.io.rentacar.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@RequiredArgsConstructor
 public class PaymentManager implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final ModelMapper modelMapper;
     private final PosService posService;
     private final PaymentBusinessRules paymentBusinessRules;
-
-    public PaymentManager(
-            PaymentRepository paymentRepository,
-            ModelMapper modelMapper,
-            PosService posService,
-            PaymentBusinessRules paymentBusinessRules
-    ) {
-        this.paymentRepository = paymentRepository;
-        this.modelMapper = modelMapper;
-        this.posService = posService;
-        this.paymentBusinessRules = paymentBusinessRules;
-    }
 
     @Override
     public List<GetAllPaymentsResponse> getAll() {

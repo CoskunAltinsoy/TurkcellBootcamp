@@ -49,7 +49,6 @@ public class IndividualCustomersController {
     public AuthResponse login(@RequestBody AuthRequest authRequest){
         return individualCustomerService.login(authRequest);
     }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id){

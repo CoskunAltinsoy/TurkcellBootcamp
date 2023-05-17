@@ -10,6 +10,7 @@ import com.kodlama.io.rentacar.business.dto.responses.update.UpdateInvoiceRespon
 import com.kodlama.io.rentacar.business.rules.InvoiceBusinessRules;
 import com.kodlama.io.rentacar.entities.Invoice;
 import com.kodlama.io.rentacar.repository.InvoiceRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class InvoiceManager implements InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final ModelMapper modelMapper;
     private final InvoiceBusinessRules invoiceBusinessRules;
-
-    public InvoiceManager(
-            InvoiceRepository invoiceRepository,
-            ModelMapper modelMapper,
-            InvoiceBusinessRules invoiceBusinessRules
-    ) {
-        this.invoiceRepository = invoiceRepository;
-        this.modelMapper = modelMapper;
-        this.invoiceBusinessRules = invoiceBusinessRules;
-    }
 
     @Override
     public List<GetAllInvoicesResponse> getAll() {

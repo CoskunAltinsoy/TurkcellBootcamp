@@ -10,6 +10,7 @@ import com.kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse
 import com.kodlama.io.rentacar.business.rules.ModelBusinessRules;
 import com.kodlama.io.rentacar.entities.Model;
 import com.kodlama.io.rentacar.repository.ModelRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ModelManager implements ModelService {
     private final ModelRepository modelRepository;
     private final ModelMapper modelMapper;
     private final ModelBusinessRules modelBusinessRules;
-
-    public ModelManager(
-            ModelRepository modelRepository,
-            ModelMapper modelMapper,
-            ModelBusinessRules modelBusinessRules
-    ) {
-        this.modelRepository = modelRepository;
-        this.modelMapper = modelMapper;
-        this.modelBusinessRules = modelBusinessRules;
-    }
 
     @Override
     public List<GetAllModelsResponse> getAll() {

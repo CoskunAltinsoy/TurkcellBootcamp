@@ -4,15 +4,14 @@ import com.kodlama.io.rentacar.business.dto.requests.create.CreatePaymentRequest
 import com.kodlama.io.rentacar.common.dto.CreateRentalPaymentRequest;
 import com.kodlama.io.rentacar.core.exceptions.BusinessException;
 import com.kodlama.io.rentacar.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentBusinessRules {
     private final PaymentRepository paymentRepository;
 
-    public PaymentBusinessRules(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
     public void checkIfPaymentExists(int id) {
         if (!paymentRepository.existsById(id)) {
             throw new BusinessException("There is no payment information found");

@@ -10,6 +10,7 @@ import com.kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse
 import com.kodlama.io.rentacar.business.rules.BrandBusinessRules;
 import com.kodlama.io.rentacar.entities.Brand;
 import com.kodlama.io.rentacar.repository.BrandRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BrandManager implements BrandService {
     private final BrandRepository brandRepository;
     private final ModelMapper modelMapper;
     private final BrandBusinessRules brandBusinessRules;
 
-    public BrandManager(
-            BrandRepository brandRepository,
-            ModelMapper modelMapper,
-            BrandBusinessRules brandBusinessRules
-    ) {
-        this.brandRepository = brandRepository;
-        this.modelMapper = modelMapper;
-        this.brandBusinessRules = brandBusinessRules;
-    }
     @Override
     public List<GetAllBrandsResponse> getAll() {
         List<Brand> brands = brandRepository.findAll();

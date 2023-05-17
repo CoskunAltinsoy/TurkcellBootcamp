@@ -12,6 +12,7 @@ import com.kodlama.io.rentacar.business.rules.MaintenanceBusinessRules;
 import com.kodlama.io.rentacar.entities.Maintenance;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.MaintenanceRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,23 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MaintenanceManager implements MaintenanceService {
     private final MaintenanceRepository maintenanceRepository;
     private final CarService carService;
     private final ModelMapper modelMapper;
     private final MaintenanceBusinessRules maintenanceBusinessRules;
 
-    public MaintenanceManager(
-            MaintenanceRepository maintenanceRepository,
-            CarService carService,
-            ModelMapper modelMapper,
-            MaintenanceBusinessRules maintenanceBusinessRules
-    ) {
-        this.maintenanceRepository = maintenanceRepository;
-        this.carService = carService;
-        this.modelMapper = modelMapper;
-        this.maintenanceBusinessRules = maintenanceBusinessRules;
-    }
 
     @Override
     public List<GetAllMaintenancesResponse> getAll() {

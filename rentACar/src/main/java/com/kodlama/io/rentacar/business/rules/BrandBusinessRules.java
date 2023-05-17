@@ -1,15 +1,13 @@
 package com.kodlama.io.rentacar.business.rules;
 
 import com.kodlama.io.rentacar.repository.BrandRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BrandBusinessRules {
     private final BrandRepository brandRepository;
-
-    public BrandBusinessRules(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
-    }
 
     public void checkIfBrandExistByName(String name){
         if (brandRepository.existsByNameIgnoreCase(name)) {

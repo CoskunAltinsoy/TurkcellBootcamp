@@ -2,14 +2,13 @@ package com.kodlama.io.rentacar.business.rules;
 
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.MaintenanceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MaintenanceBusinessRules {
     private final MaintenanceRepository maintenanceRepository;
-    public MaintenanceBusinessRules(MaintenanceRepository maintenanceRepository) {
-        this.maintenanceRepository = maintenanceRepository;
-    }
 
     public void checkIfCarIsInMaintenance(int carId){
         if(maintenanceRepository.existsByCarIdAndIsCompletedIsFalse(carId)){

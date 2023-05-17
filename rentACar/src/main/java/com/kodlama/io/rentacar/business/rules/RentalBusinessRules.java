@@ -3,15 +3,13 @@ package com.kodlama.io.rentacar.business.rules;
 import com.kodlama.io.rentacar.entities.Car;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.RentalRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RentalBusinessRules {
     private final RentalRepository rentalRepository;
-
-    public RentalBusinessRules(RentalRepository rentalRepository) {
-        this.rentalRepository = rentalRepository;
-    }
 
     public void checkIfCarAvailable(CarState carState){
         if(!carState.equals(CarState.AVAILABLE)){

@@ -1,14 +1,14 @@
 package com.kodlama.io.rentacar.business.rules;
 
 import com.kodlama.io.rentacar.repository.ModelRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ModelBusinessRules {
     private final ModelRepository modelRepository;
-    public ModelBusinessRules(ModelRepository modelRepository) {
-        this.modelRepository = modelRepository;
-    }
+
     public void checkIfModelExistByName(String name){
         if (modelRepository.existsByNameIgnoreCase(name)) {
             throw new RuntimeException("This model is registered in the system");

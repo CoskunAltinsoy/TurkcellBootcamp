@@ -14,6 +14,9 @@ import com.kodlama.io.rentacar.business.dto.responses.TokenResetResponse;
 import com.kodlama.io.rentacar.business.dto.responses.create.CreateIndividualCustomerResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetAllIndividualCustomerResponse;
 import com.kodlama.io.rentacar.business.dto.responses.get.GetIndividualCustomerResponse;
+import com.kodlama.io.rentacar.business.rules.IndividualCustomerBusinessRules;
+import com.kodlama.io.rentacar.business.rules.UserBusinessRules;
+import com.kodlama.io.rentacar.core.exceptions.BusinessException;
 import com.kodlama.io.rentacar.core.util.email.EmailService;
 import com.kodlama.io.rentacar.core.util.passwordToken.TokenGenerator;
 import com.kodlama.io.rentacar.entities.IndividualCustomer;
@@ -21,6 +24,7 @@ import com.kodlama.io.rentacar.entities.User;
 import com.kodlama.io.rentacar.repository.IndividualCustomerRepository;
 import com.kodlama.io.rentacar.security.CustomUserDetail;
 import com.kodlama.io.rentacar.security.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,8 +35,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class IndividualCustomerManager implements IndividualCustomerService {
     private final IndividualCustomerRepository individualCustomerRepository;
     private final UserService userService;
@@ -42,22 +48,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
     private final PasswordEncoder passwordEncoder;
     private final TokenGenerator tokenGenerator;
     private final EmailService emailService;
-
-    public IndividualCustomerManager(IndividualCustomerRepository individualCustomerRepository,
-                                     UserService userService, ModelMapper modelMapper,
-                                     AuthenticationManager authenticationManager,
-                                     JwtUtils jwtUtils,
-                                     PasswordEncoder passwordEncoder,
-                                     TokenGenerator tokenGenerator, EmailService emailService) {
-        this.individualCustomerRepository = individualCustomerRepository;
-        this.userService = userService;
-        this.modelMapper = modelMapper;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtils = jwtUtils;
-        this.passwordEncoder = passwordEncoder;
-        this.tokenGenerator = tokenGenerator;
-        this.emailService = emailService;
-    }
+    private final IndividualCustomerBusinessRules individualCustomerBusinessRules;
+    private final UserBusinessRules userBusinessRules;
 
     @Override
     public AuthResponse login(AuthRequest authRequest) {
@@ -90,26 +82,37 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
     @Override
     public GetIndividualCustomerResponse getById(int id) {
-        return null;
+        userBusinessRules.checkIfUserExistsById(id);
+        IndividualCustomer individualCustomer = individualCustomerRepository.findById(id).orElseThrow();
+        GetIndividualCustomerResponse getIndividualCustomerResponse =
+                modelMapper.map(individualCustomer, GetIndividualCustomerResponse.class);
+
+        return getIndividualCustomerResponse;
     }
 
     @Override
     public List<GetAllIndividualCustomerResponse> getAll() {
-        return null;
+        List<IndividualCustomer> individualCustomers = individualCustomerRepository.findAll();
+        List<GetAllIndividualCustomerResponse> getAllIndividualCustomerResponses = individualCustomers
+                .stream()
+                .map(individualCustomer -> modelMapper.map(individualCustomer, GetAllIndividualCustomerResponse.class))
+                .collect(Collectors.toList());
+
+        return getAllIndividualCustomerResponses;
     }
 
     @Override
     public void delete(int id) {
-
+        userBusinessRules.checkIfUserExistsById(id);
+        individualCustomerRepository.deleteById(id);
     }
 
     @Override
     public PasswordResponse changePassword(PasswordRequest passwordRequest) {
-        checkPasswords(passwordRequest.getEmail(),
-                passwordRequest.getOldPassword(),
-                passwordRequest.getNewPassword());
-
         User user = userService.getByEmail(passwordRequest.getEmail());
+
+        individualCustomerBusinessRules.checkPasswords(passwordRequest.getOldPassword(),
+                user.getPassword());
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -156,13 +159,5 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         return tokenResetResponse;
     }
-    private void checkPasswords(String email, String oldPassword, String newPassword){
-        User user = userService.getByEmail(email);
 
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-        if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())){
-            throw new RuntimeException("Incorrect Password");
-        }
-    }
 }

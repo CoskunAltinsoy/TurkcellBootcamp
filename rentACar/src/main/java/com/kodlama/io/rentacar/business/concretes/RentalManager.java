@@ -17,6 +17,7 @@ import com.kodlama.io.rentacar.common.dto.CreateRentalPaymentRequest;
 import com.kodlama.io.rentacar.entities.Rental;
 import com.kodlama.io.rentacar.entities.enums.CarState;
 import com.kodlama.io.rentacar.repository.RentalRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RentalManager implements RentalService {
     private final RentalRepository rentalRepository;
     private final CarService carService;
@@ -32,22 +34,6 @@ public class RentalManager implements RentalService {
     private final PaymentService paymentService;
     private final InvoiceService invoiceService;
     private final RentalBusinessRules rentalBusinessRules;
-
-    public RentalManager(
-            RentalRepository rentalRepository,
-            CarService carService,
-            ModelMapper modelMapper,
-            PaymentService paymentService,
-            InvoiceService invoiceService,
-            RentalBusinessRules rentalBusinessRules
-    ){
-        this.rentalRepository = rentalRepository;
-        this.carService = carService;
-        this.modelMapper = modelMapper;
-        this.paymentService = paymentService;
-        this.invoiceService = invoiceService;
-        this.rentalBusinessRules = rentalBusinessRules;
-    }
 
     @Override
     public List<GetAllRentalsResponse> getAll() {
