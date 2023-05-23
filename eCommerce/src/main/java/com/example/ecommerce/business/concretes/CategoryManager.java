@@ -20,53 +20,53 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryManager implements CategoryService {
 
-    private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
+    private final CategoryRepository repository;
+    private final ModelMapper mapper;
 
     @Override
-    public CreateCategoryResponse add(CreateCategoryRequest createCategoryRequest) {
-        Category category = modelMapper.map(createCategoryRequest, Category.class);
+    public CreateCategoryResponse add(CreateCategoryRequest request) {
+        Category category = mapper.map(request, Category.class);
         category.setId(0);
-        categoryRepository.save(category);
+        repository.save(category);
 
-        CreateCategoryResponse createCategoryResponse =
-                modelMapper.map(category, CreateCategoryResponse.class);
+        CreateCategoryResponse response =
+                mapper.map(category, CreateCategoryResponse.class);
 
-        return createCategoryResponse;
+        return response;
     }
 
     @Override
     public void delete(int id) {
-        categoryRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public UpdateCategoryResponse update(UpdateCategoryRequest updateCategoryRequest) {
-        Category category = modelMapper.map(updateCategoryRequest, Category.class);
-        categoryRepository.save(category);
+    public UpdateCategoryResponse update(UpdateCategoryRequest request) {
+        Category category = mapper.map(request, Category.class);
+        repository.save(category);
 
-        UpdateCategoryResponse updateCategoryResponse =
-                modelMapper.map(category, UpdateCategoryResponse.class);
+        UpdateCategoryResponse response =
+                mapper.map(category, UpdateCategoryResponse.class);
 
-        return updateCategoryResponse;
+        return response;
     }
 
     @Override
     public List<GetAllCategoriesResponse> getAll() {
-        List<Category> categories = categoryRepository.findAll();
-        List<GetAllCategoriesResponse> getAllCategoriesRespons = categories
+        List<Category> categories = repository.findAll();
+        List<GetAllCategoriesResponse> responses = categories
                 .stream()
-                .map(category -> modelMapper.map(category, GetAllCategoriesResponse.class))
+                .map(category -> mapper.map(category, GetAllCategoriesResponse.class))
                 .collect(Collectors.toList());
 
-        return getAllCategoriesRespons;
+        return responses;
     }
 
     @Override
     public GetCategoryResponse getById(int id) {
-        Category category = categoryRepository.findById(id).orElseThrow();
-        GetCategoryResponse getCategoryResponse = modelMapper.map(category, GetCategoryResponse.class);
+        Category category = repository.findById(id).orElseThrow();
+        GetCategoryResponse response = mapper.map(category, GetCategoryResponse.class);
 
-        return getCategoryResponse;
+        return response;
     }
 }

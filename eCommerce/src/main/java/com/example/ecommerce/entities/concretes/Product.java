@@ -1,7 +1,6 @@
 package com.example.ecommerce.entities.concretes;
 
 import com.example.ecommerce.entities.concretes.enums.ProductState;
-import com.example.ecommerce.entities.concretes.enums.ProductStockState;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,8 +26,6 @@ public class Product {
     private double unitPrice;
     private String description;
     @Enumerated(value = EnumType.STRING)
-    private ProductStockState productStockState;
-    @Enumerated(value = EnumType.STRING)
     private ProductState productState;
 
     @JsonManagedReference
@@ -40,7 +37,6 @@ public class Product {
     )
     private Set<Category> categories = new HashSet<>();
 
-    @ManyToOne()
-    @JoinColumn(name = "sale_id")
-    private Sale sale;
+    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    private Set<Sale> sales = new HashSet<>();
 }

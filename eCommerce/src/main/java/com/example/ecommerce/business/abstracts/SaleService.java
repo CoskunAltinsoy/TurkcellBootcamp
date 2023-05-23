@@ -10,9 +10,10 @@ import com.example.ecommerce.business.dto.response.update.UpdateSaleResponse;
 import java.util.List;
 
 public interface SaleService {
-    CreateSaleResponse add(CreateSaleRequest createSaleRequest);
+    CreateSaleResponse add(CreateSaleRequest request);
     void delete(int id);
-    UpdateSaleResponse update(UpdateSaleRequest updateSaleRequest);
+    UpdateSaleResponse update(UpdateSaleRequest request);
     List<GetAllSalesResponse> getAll();
     GetSaleResponse getById(int id);
+
 }

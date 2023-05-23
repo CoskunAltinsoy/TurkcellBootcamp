@@ -8,7 +8,7 @@ import com.example.ecommerce.business.dto.response.get.GetAllProductsResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
 import com.example.ecommerce.entities.concretes.Product;
-import com.example.ecommerce.entities.concretes.enums.ProductStockState;
+import com.example.ecommerce.entities.concretes.enums.ProductState;
 import com.example.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,76 +20,69 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductManager implements ProductService {
-    private final ProductRepository productRepository;
-    private final ModelMapper modelMapper;
+    private final ProductRepository repository;
+    private final ModelMapper mapper;
     @Override
-    public CreateProductResponse add(CreateProductRequest createProductRequest) {
-        Product product = modelMapper.map(createProductRequest, Product.class);
+    public CreateProductResponse add(CreateProductRequest request) {
+        Product product = mapper.map(request, Product.class);
         product.setId(0);
-        productRepository.save(product);
+        product.setProductState(ProductState.ACTIVE);
 
-        CreateProductResponse createProductResponse =
-                modelMapper.map(product, CreateProductResponse.class);
+        repository.save(product);
 
-       return createProductResponse;
+        CreateProductResponse response =
+                mapper.map(product, CreateProductResponse.class);
+
+       return response;
     }
 
     @Override
     public void delete(int id) {
-        productRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public UpdateProductResponse update(UpdateProductRequest updateProductRequest) {
-        Product product = modelMapper.map(updateProductRequest, Product.class);
-        productRepository.save(product);
+    public UpdateProductResponse update(UpdateProductRequest request) {
+        Product product = mapper.map(request, Product.class);
+        repository.save(product);
 
-        UpdateProductResponse updateProductResponse =
-                modelMapper.map(product, UpdateProductResponse.class);
+        UpdateProductResponse response =
+                mapper.map(product, UpdateProductResponse.class);
 
-        return updateProductResponse;
+        return response;
     }
 
     @Override
     public List<GetAllProductsResponse> getAll(boolean includeAvailable) {
         List<Product> products = filterProductsByProductState(includeAvailable);
-        List<GetAllProductsResponse> getAllProductsRespons = products
+        List<GetAllProductsResponse> responses = products
                 .stream()
-                .map(product -> modelMapper.map(product, GetAllProductsResponse.class))
+                .map(product -> mapper.map(product, GetAllProductsResponse.class))
                 .collect(Collectors.toList());
 
-        return getAllProductsRespons;
+        return responses;
     }
 
     @Override
     public GetProductResponse getById(int id) {
-        Product product = productRepository.findById(id).orElseThrow();
-        GetProductResponse getProductResponse =
-                modelMapper.map(product, GetProductResponse.class);
+        Product product = repository.findById(id).orElseThrow();
+        GetProductResponse response =
+                mapper.map(product, GetProductResponse.class);
 
-        return getProductResponse;
+        return response;
     }
-
     @Override
-    public void changeState(int carId, ProductStockState productStockState) {
-        Product product = productRepository.findById(carId).orElseThrow();
-        product.setProductStockState(productStockState);
-        productRepository.save(product);
+    public void changeProductState(int productId, ProductState state) {
+        Product product = repository.findById(productId).orElseThrow();
+        product.setProductState(state);
+        repository.save(product);
     }
+
     private List<Product> filterProductsByProductState(boolean includeAvailable){
         if (includeAvailable){
-            return productRepository.findAll();
+            return repository.findAll();
         }
-        return productRepository.findAllByProductStateIsNot(ProductStockState.AVAILABLE);
+        return repository.findAllByProductStateIsNot(ProductState.ACTIVE);
     }
 
-    private boolean checkProduct(Product product){
-        if(product.getUnitPrice()>0 &&
-                product.getQuantity()>0 &&
-                    product.getDescription().length() < 50 &&
-                        product.getDescription().length() > 10){
-            return true;
-        }
-        return false;
-    }
 }

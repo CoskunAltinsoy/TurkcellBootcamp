@@ -11,6 +11,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateSaleRequest {
     private int id;
-    private double totalPrice;
-    private String description;
 }

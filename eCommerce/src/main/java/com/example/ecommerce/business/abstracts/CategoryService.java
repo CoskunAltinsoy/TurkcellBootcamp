@@ -10,9 +10,9 @@ import com.example.ecommerce.business.dto.response.update.UpdateCategoryResponse
 import java.util.List;
 
 public interface CategoryService {
-    CreateCategoryResponse add(CreateCategoryRequest createCategoryRequest);
+    CreateCategoryResponse add(CreateCategoryRequest request);
     void delete(int id);
-    UpdateCategoryResponse update(UpdateCategoryRequest updateCategoryRequest);
+    UpdateCategoryResponse update(UpdateCategoryRequest request);
     List<GetAllCategoriesResponse> getAll();
     GetCategoryResponse getById(int id);
 }

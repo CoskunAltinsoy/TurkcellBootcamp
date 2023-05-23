@@ -1,6 +1,5 @@
 package com.example.ecommerce.business.dto.response.create;
 
-import com.example.ecommerce.entities.concretes.enums.ProductStockState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +15,5 @@ public class CreateProductResponse {
     private int quantity;
     private double unitPrice;
     private String description;
-    private ProductStockState productStockState;
+
 }

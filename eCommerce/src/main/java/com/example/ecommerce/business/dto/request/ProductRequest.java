@@ -1,4 +1,4 @@
-package com.example.ecommerce.business.dto.response.get;
+package com.example.ecommerce.business.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetSaleResponse {
+public class ProductRequest {
     private int id;
-    private double totalPrice;
 }

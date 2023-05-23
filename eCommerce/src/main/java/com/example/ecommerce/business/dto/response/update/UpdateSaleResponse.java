@@ -12,5 +12,4 @@ import lombok.Setter;
 public class UpdateSaleResponse {
     private int id;
     private double totalPrice;
-    private String description;
 }

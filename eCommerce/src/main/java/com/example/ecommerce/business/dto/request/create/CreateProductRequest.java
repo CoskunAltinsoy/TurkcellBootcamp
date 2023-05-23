@@ -14,5 +14,5 @@ public class CreateProductRequest {
     private int quantity;
     private double unitPrice;
     private String description;
-    private int categoryId;
+
 }
