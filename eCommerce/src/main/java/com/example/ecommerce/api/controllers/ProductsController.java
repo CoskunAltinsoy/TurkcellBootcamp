@@ -1,4 +1,4 @@
-package com.example.ecommerce.api;
+package com.example.ecommerce.api.controllers;
 
 import com.example.ecommerce.business.abstracts.ProductService;
 import com.example.ecommerce.business.dto.request.create.CreateProductRequest;
@@ -16,32 +16,32 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products")
-public class ProductController {
-    private final ProductService productService;
-
+public class ProductsController {
+    private final ProductService service;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CreateProductResponse> add(@RequestBody CreateProductRequest createProductRequest){
-        return ResponseEntity.ok(productService.add(createProductRequest));
+        return ResponseEntity.ok(service.add(createProductRequest));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") int id){
-        productService.delete(id);
+        service.delete(id);
         return (ResponseEntity<Void>) ResponseEntity.ok();
     }
     @PutMapping ()
     public ResponseEntity<UpdateProductResponse> update(@RequestBody UpdateProductRequest updateProductRequest){
-        return ResponseEntity.ok(productService.update(updateProductRequest));
+        return ResponseEntity.ok(service.update(updateProductRequest));
     }
     @GetMapping()
     public ResponseEntity<List<GetAllProductsResponse>> getAll
             (@RequestParam(defaultValue = "true") boolean includeAvailable){
-        return ResponseEntity.ok(productService.getAll(includeAvailable));
+        return ResponseEntity.ok(service.getAll(includeAvailable));
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<GetProductResponse> getById(@PathVariable("id") int id){;
-        return ResponseEntity.ok(productService.getById(id));
+        return ResponseEntity.ok(service.getById(id));
     }
+
 }

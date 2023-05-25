@@ -1,19 +1,20 @@
 package com.example.ecommerce.business.dto.response.get;
 
-import com.example.ecommerce.business.dto.request.ProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAllSalesResponse {
+public class GetAllPaymentsResponse {
     private int id;
-    private double totalPrice;
-    private List<ProductRequest> products;
+    private String cardNumber;
+    private String cardHolder;
+    private int cardExpirationYear;
+    private int cardExpirationMonth;
+    private String cardCvv;
+    private double balance;
 }

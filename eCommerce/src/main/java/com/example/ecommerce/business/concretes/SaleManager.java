@@ -11,6 +11,7 @@ import com.example.ecommerce.business.dto.response.get.GetAllSalesResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.get.GetSaleResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateSaleResponse;
+import com.example.ecommerce.entities.concretes.Category;
 import com.example.ecommerce.entities.concretes.Product;
 import com.example.ecommerce.entities.concretes.Sale;
 import com.example.ecommerce.repository.SaleRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,10 +35,12 @@ public class SaleManager implements SaleService {
         Sale sale = mapper.map(request, Sale.class);
         sale.setId(0);
 
-        request.getProducts().stream()
-                        .forEach(product -> sale.getProducts()
-                                .add(mapper.map(productService.getById(product.getId()), Product.class)));
-
+        Set<Product> products = request.getProducts().stream()
+                .map(product -> mapper.map(productService.getById(product.getId()), Product.class))
+                .collect(Collectors.toSet());
+        sale.setProducts(products);
+        sale.setTotalPrice(getTotalPrice(sale.getProducts()));
+        getTotalQuantity(sale.getProducts());
         repository.save(sale);
 
         CreateSaleResponse response = mapper.map(sale, CreateSaleResponse.class);
@@ -45,22 +49,60 @@ public class SaleManager implements SaleService {
 
     @Override
     public void delete(int id) {
-
+        repository.deleteById(id);
     }
 
     @Override
     public UpdateSaleResponse update(UpdateSaleRequest request) {
-        return null;
+        Sale sale = mapper.map(request, Sale.class);
+
+        Set<Product> products = request.getProducts().stream()
+                .map(product -> mapper.map(productService.getById(product.getId()), Product.class))
+                .collect(Collectors.toSet());
+        sale.setProducts(products);
+        sale.setTotalPrice(getTotalPrice(sale.getProducts()));
+        getTotalQuantity(sale.getProducts());
+        repository.save(sale);
+
+        UpdateSaleResponse response = mapper.map(sale, UpdateSaleResponse.class);
+        return response;
     }
 
     @Override
     public List<GetAllSalesResponse> getAll() {
-        return null;
+        List<Sale> sales = repository.findAll();
+        List<GetAllSalesResponse> responses = sales
+                .stream()
+                .map(sale -> mapper.map(sale, GetAllSalesResponse.class))
+                .collect(Collectors.toList());
+
+        return responses;
     }
 
     @Override
     public GetSaleResponse getById(int id) {
-        return null;
+        Sale sale = repository.findById(id).orElseThrow();
+        GetSaleResponse response =
+                mapper.map(sale, GetSaleResponse.class);
+
+        return response;
+    }
+    private void getTotalQuantity(Set<Product> products) {
+        products.stream()
+                .map(product -> {
+                    GetProductResponse retrievedProduct = productService.getById(product.getId());
+                    retrievedProduct.setQuantity(retrievedProduct.getQuantity() - product.getQuantity());
+                    return retrievedProduct;
+                })
+                .collect(Collectors.toSet());
+    }
+    private Double getTotalPrice(Set<Product> products) {
+        double sum = 0;
+        sum = products.stream()
+                .mapToDouble(product -> product.getQuantity() * product.getUnitPrice())
+                .sum();
+
+        return sum;
     }
 
 }

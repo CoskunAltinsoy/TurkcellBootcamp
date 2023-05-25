@@ -24,7 +24,6 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private double totalPrice;
-    private int quantity;
 
     @JsonManagedReference
     @ManyToMany

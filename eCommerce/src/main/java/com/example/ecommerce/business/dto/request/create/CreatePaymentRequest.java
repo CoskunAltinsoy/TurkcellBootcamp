@@ -1,17 +1,18 @@
 package com.example.ecommerce.business.dto.request.create;
 
-import com.example.ecommerce.business.dto.request.ProductRequest;
+import com.example.ecommerce.business.dto.request.PaymentRequest;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateSaleRequest {
-    private List<ProductRequest> products;
+public class CreatePaymentRequest extends PaymentRequest {
+    @Min(1)
+    private double balance;
+
 }

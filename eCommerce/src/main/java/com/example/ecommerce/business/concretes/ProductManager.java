@@ -1,5 +1,6 @@
 package com.example.ecommerce.business.concretes;
 
+import com.example.ecommerce.business.abstracts.CategoryService;
 import com.example.ecommerce.business.abstracts.ProductService;
 import com.example.ecommerce.business.dto.request.create.CreateProductRequest;
 import com.example.ecommerce.business.dto.request.update.UpdateProductRequest;
@@ -7,6 +8,7 @@ import com.example.ecommerce.business.dto.response.create.CreateProductResponse;
 import com.example.ecommerce.business.dto.response.get.GetAllProductsResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateProductResponse;
+import com.example.ecommerce.entities.concretes.Category;
 import com.example.ecommerce.entities.concretes.Product;
 import com.example.ecommerce.entities.concretes.enums.ProductState;
 import com.example.ecommerce.repository.ProductRepository;
@@ -15,12 +17,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductManager implements ProductService {
     private final ProductRepository repository;
+    private final CategoryService categoryService;
     private final ModelMapper mapper;
     @Override
     public CreateProductResponse add(CreateProductRequest request) {
@@ -28,6 +32,11 @@ public class ProductManager implements ProductService {
         product.setId(0);
         product.setProductState(ProductState.ACTIVE);
 
+        Set<Category> categories = request.getCategories().stream()
+                .map(category -> mapper.map(categoryService.getById(category.getId()), Category.class))
+                .collect(Collectors.toSet());
+
+        product.setCategories(categories);
         repository.save(product);
 
         CreateProductResponse response =
@@ -44,6 +53,12 @@ public class ProductManager implements ProductService {
     @Override
     public UpdateProductResponse update(UpdateProductRequest request) {
         Product product = mapper.map(request, Product.class);
+
+        Set<Category> categories = request.getCategories().stream()
+                .map(category -> mapper.map(categoryService.getById(category.getId()), Category.class))
+                .collect(Collectors.toSet());
+
+        product.setCategories(categories);
         repository.save(product);
 
         UpdateProductResponse response =
@@ -84,5 +99,6 @@ public class ProductManager implements ProductService {
         }
         return repository.findAllByProductStateIsNot(ProductState.ACTIVE);
     }
+
 
 }
