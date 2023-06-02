@@ -1,17 +1,16 @@
 package com.example.ecommerce.business.concretes;
 
+import com.example.ecommerce.business.abstracts.InvoiceService;
 import com.example.ecommerce.business.abstracts.ProductService;
 import com.example.ecommerce.business.abstracts.SaleService;
-import com.example.ecommerce.business.dto.request.ProductRequest;
+import com.example.ecommerce.business.dto.request.create.CreateInvoiceRequest;
 import com.example.ecommerce.business.dto.request.create.CreateSaleRequest;
 import com.example.ecommerce.business.dto.request.update.UpdateSaleRequest;
 import com.example.ecommerce.business.dto.response.create.CreateSaleResponse;
-import com.example.ecommerce.business.dto.response.get.GetAllProductsResponse;
 import com.example.ecommerce.business.dto.response.get.GetAllSalesResponse;
 import com.example.ecommerce.business.dto.response.get.GetProductResponse;
 import com.example.ecommerce.business.dto.response.get.GetSaleResponse;
 import com.example.ecommerce.business.dto.response.update.UpdateSaleResponse;
-import com.example.ecommerce.entities.concretes.Category;
 import com.example.ecommerce.entities.concretes.Product;
 import com.example.ecommerce.entities.concretes.Sale;
 import com.example.ecommerce.repository.SaleRepository;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +28,7 @@ public class SaleManager implements SaleService {
     private final SaleRepository repository;
     private final ModelMapper mapper;
     private final ProductService productService;
+    private final InvoiceService invoiceService;
     @Override
     public CreateSaleResponse add(CreateSaleRequest request) {
         Sale sale = mapper.map(request, Sale.class);
@@ -38,10 +37,15 @@ public class SaleManager implements SaleService {
         Set<Product> products = request.getProducts().stream()
                 .map(product -> mapper.map(productService.getById(product.getId()), Product.class))
                 .collect(Collectors.toSet());
+
         sale.setProducts(products);
         sale.setTotalPrice(getTotalPrice(sale.getProducts()));
         getTotalQuantity(sale.getProducts());
         repository.save(sale);
+
+        CreateInvoiceRequest invoiceRequest = new CreateInvoiceRequest();
+        createInvoiceRequest(request,invoiceRequest);
+        invoiceService.add(invoiceRequest);
 
         CreateSaleResponse response = mapper.map(sale, CreateSaleResponse.class);
         return response;
@@ -103,6 +107,12 @@ public class SaleManager implements SaleService {
                 .sum();
 
         return sum;
+    }
+    private void createInvoiceRequest(
+            CreateSaleRequest saleRequest,
+            CreateInvoiceRequest invoiceRequest
+    ) {
+        invoiceRequest.setCardHolder(saleRequest.getPaymentRequest().getCardHolder());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.ecommerce.business.dto.request.create;
 
+import com.example.ecommerce.business.dto.request.PaymentRequest;
 import com.example.ecommerce.business.dto.request.ProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateSaleRequest {
     private List<ProductRequest> products;
+    private PaymentRequest paymentRequest;
 }
